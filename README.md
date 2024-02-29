@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Welcome
+
+This is a project made for Platform Technologies. This is a mock website that features a transactional-based system for a ticket selling business. The goal of this project is to probide users and customers valuable insight on how a system such as this works inside and out. This project will feature a full front-end experience powered by Firebase.
+
+## Requirements
+
+This project assumes that the developer knows how to write JavaScript, CSS, HTML, Bootstrap and knows how to use the React framework effectively.
+
+```bash
+NodeJS 10.5.0
+Firebase CLI
+```
 
 ## Getting Started
 
-First, run the development server:
-
+Install all the required packages first using:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Additional Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+With Firebase installed, developers will need to get the API keys from the Firebase console.
 
-## Learn More
+1. Make a new file inside the `src\app\scripts` folder and name it `firebase.js`
+2. Copy the code below into the newly created file.
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getFirestore, Timestamp } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {...};
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
-## Deploy on Vercel
+export const db = getFirestore(app);
+export const auth = getAuth(app)
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. Go to the [Firebase Console](https://console.firebase.google.com/u/1/project/silkroad-apparel/)
+4. Find the gear icon on the top left.
+5. Go to project settings and then scroll down.
+6. You should see SDK Setup and configuration, set it to npm.
+7. Copy the contents inside `const firebaseConfig` and paste it inside your Firebase config. 
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+After adding these lines to the firebase.js file, you are all set.
+
+## Project Deployment
+
+Once the project has been finished and the bugs have been squashed. The team will deploy the project on Vercel. A web hosting service tailor made for the needs of Next.js.
