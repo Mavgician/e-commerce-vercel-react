@@ -18,7 +18,7 @@ Install all the required packages first using:
 npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+After packages are installed run `npm run dev` and open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Additional Setup
 
