@@ -7,7 +7,7 @@ This is a project made for Platform Technologies. This is a mock website that fe
 This project assumes that the developer knows how to write JavaScript, CSS, HTML, Bootstrap and knows how to use the React framework effectively.
 
 ```bash
-NodeJS 10.5.0
+NodeJS => 10.5.0
 Firebase CLI
 ```
 
