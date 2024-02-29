@@ -27,7 +27,7 @@ With Firebase installed, developers will need to get the API keys from the Fireb
 1. Make a new file inside the `src\app\scripts` folder and name it `firebase.js`
 2. Copy the code below into the newly created file.
 
-```bash
+```javascript
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
@@ -36,7 +36,7 @@ import { getAuth } from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app\'s Firebase configuration
+// Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {...};
 
