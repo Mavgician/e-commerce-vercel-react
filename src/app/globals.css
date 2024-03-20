@@ -1,0 +1,25 @@
+body{
+    background-color: rgb(95, 23, 23);
+}
+.NavBar{
+    margin-top: 55px;
+    
+}
+.carousel-image {
+    width: 100%;
+    height: auto;
+}
+.carousel-container {
+    padding: 0;
+}
+.carousel {
+    margin: 0;
+    padding: 0;
+}
+.carousel-item {
+    width: 100%;
+    height: auto;
+}
+.carousel-indicators {
+    margin-bottom: 10px;
+}
