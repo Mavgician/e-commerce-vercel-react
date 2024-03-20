@@ -45,7 +45,7 @@ function Navigationbar() {
         </Nav>
         <Nav className='ms-auto' navbar>
           <NavItem>
-            <NavLink href={auth.user ? `/user/${user?.uid}` : '/login'}>
+            <NavLink href={auth.user ? `/user/${auth.user?.uid}` : '/login'}>
               muahaha
             </NavLink>
           </NavItem>
