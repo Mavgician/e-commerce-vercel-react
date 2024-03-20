@@ -47,7 +47,7 @@ export const db = getFirestore(app);
 export const auth = getAuth(app)
 ```
 
-3. Go to the [Firebase Console](https://console.firebase.google.com/u/1/project/silkroad-apparel/)
+3. Go to the [Firebase Console](https://console.firebase.google.com/project/conflix-567b2)
 4. Find the gear icon on the top left.
 5. Go to project settings and then scroll down.
 6. You should see SDK Setup and configuration, set it to npm.
