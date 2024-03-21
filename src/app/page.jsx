@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Container, Carousel, CarouselItem, CarouselControl, CarouselIndicators, CarouselCaption } from 'reactstrap';
-import { Navigationbar } from "./components/NavigationBar";
+import { Navigationbar } from "../components/NavigationBar";
 
 const items = [
   {

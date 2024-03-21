@@ -1,8 +1,8 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import "@/app/globals.css";
+import "@/styles/globals.css";
 
-import { Navigationbar } from '@/app/components/NavigationBar';
-import { AuthContextProvider } from '@/app/scripts/AuthContextProvider';
+import { Navigationbar } from '@/components/NavigationBar';
+import { AuthContextProvider } from '@/scripts/AuthContextProvider';
 
 export const metadata = {
   title: "ConFlix - Get your tickets!",
