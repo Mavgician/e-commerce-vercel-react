@@ -1,7 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "@/styles/globals.css";
 
-import { Navigationbar } from '@/components/NavigationBar';
 import { AuthContextProvider } from '@/scripts/AuthContextProvider';
 
 export const metadata = {
@@ -14,7 +13,6 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <AuthContextProvider>
-          <Navigationbar />
           {children}
         </AuthContextProvider>
       </body>

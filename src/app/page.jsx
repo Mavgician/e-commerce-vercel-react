@@ -52,7 +52,6 @@ export default function Page() {
 
   return (
     <main>
-      <Navigationbar />
       <div className='NavBar'>
         <Container fluid={true} className='carousel-container'> 
           <Carousel
