@@ -1,19 +1,25 @@
 'use client'
 
 import { useState } from 'react';
-import { Container, Carousel, CarouselItem, CarouselIndicators, CarouselCaption } from 'reactstrap';
+import { Container, Carousel, CarouselItem } from 'reactstrap';
 
 import Image from 'next/image'
 
 const items = [
   {
     src: 'https://firebasestorage.googleapis.com/v0/b/conflix-567b2.appspot.com/o/demo-images%2Fhomepage%2Fcarousel1.jpg?alt=media&token=94cc3109-0494-45b3-b410-5903853bbb8f',
+    caption: 'test',
+    header: 'test-header'
   },
   {
     src: 'https://firebasestorage.googleapis.com/v0/b/conflix-567b2.appspot.com/o/demo-images%2Fhomepage%2Fcarousel2.jpg?alt=media&token=fba70b5b-ee67-4687-a90f-007ec054d313',
+    caption: 'test',
+    header: 'test-header'
   },
   {
     src: 'https://firebasestorage.googleapis.com/v0/b/conflix-567b2.appspot.com/o/demo-images%2Fhomepage%2Fcarousel3.jpg?alt=media&token=41fdaad3-e47c-4f08-9497-fb5fbf2eb4dd',
+    caption: 'test',
+    header: 'test-header'
   }
 ];
 
@@ -33,11 +39,6 @@ export default function Page() {
     setActiveIndex(nextIndex);
   }
 
-  const goToIndex = (newIndex) => {
-    if (animating) return;
-    setActiveIndex(newIndex);
-  }
-
   const slides = items.map((item, index) => {
     return (
       <CarouselItem
@@ -46,7 +47,6 @@ export default function Page() {
         key={item.src}
       >
         <Image src={item.src} alt={`Slide ${index}`} width={0} height={0} sizes="100vw" style={{ width: '100%', height: 'auto' }}/>
-        <CarouselCaption captionText={item.caption} captionHeader={item.caption} />
       </CarouselItem>
     );
   });
@@ -59,7 +59,6 @@ export default function Page() {
           next={next}
           previous={previous}
         >
-          <CarouselIndicators items={items} activeIndex={activeIndex} onClickHandler={goToIndex} />
           {slides}
         </Carousel>
       </Container>
