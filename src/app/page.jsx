@@ -1,18 +1,19 @@
 'use client'
 
 import { useState } from 'react';
-import { Container, Carousel, CarouselItem, CarouselControl, CarouselIndicators, CarouselCaption } from 'reactstrap';
-import { Navigationbar } from "../components/NavigationBar";
+import { Container, Carousel, CarouselItem, CarouselIndicators, CarouselCaption } from 'reactstrap';
+
+import Image from 'next/image'
 
 const items = [
   {
-    src: 'https://images1.smtickets.com/images/carousel_16032024164145.jpg',
+    src: 'https://firebasestorage.googleapis.com/v0/b/conflix-567b2.appspot.com/o/demo-images%2Fhomepage%2Fcarousel1.jpg?alt=media&token=94cc3109-0494-45b3-b410-5903853bbb8f',
   },
   {
-    src: 'https://images1.smtickets.com/images/carousel_13032024124818.jpg',
+    src: 'https://firebasestorage.googleapis.com/v0/b/conflix-567b2.appspot.com/o/demo-images%2Fhomepage%2Fcarousel2.jpg?alt=media&token=fba70b5b-ee67-4687-a90f-007ec054d313',
   },
   {
-    src: 'https://images1.smtickets.com/images/carousel_26012024193335.jpg',
+    src: 'https://firebasestorage.googleapis.com/v0/b/conflix-567b2.appspot.com/o/demo-images%2Fhomepage%2Fcarousel3.jpg?alt=media&token=41fdaad3-e47c-4f08-9497-fb5fbf2eb4dd',
   }
 ];
 
@@ -44,7 +45,7 @@ export default function Page() {
         onExited={() => setAnimating(false)}
         key={item.src}
       >
-        <img src={item.src} alt={`Slide ${index}`} className="carousel-image" /> 
+        <Image src={item.src} alt={`Slide ${index}`} width={0} height={0} sizes="100vw" style={{ width: '100%', height: 'auto' }}/>
         <CarouselCaption captionText={item.caption} captionHeader={item.caption} />
       </CarouselItem>
     );
@@ -52,18 +53,16 @@ export default function Page() {
 
   return (
     <main>
-      <div className='NavBar'>
-        <Container fluid={true} className='carousel-container'> 
-          <Carousel
-            activeIndex={activeIndex}
-            next={next}
-            previous={previous}
-          >
-            <CarouselIndicators items={items} activeIndex={activeIndex} onClickHandler={goToIndex} />
-            {slides}
-          </Carousel>
-        </Container>
-      </div>
+      <Container fluid={true} className='carousel-container'> 
+        <Carousel
+          activeIndex={activeIndex}
+          next={next}
+          previous={previous}
+        >
+          <CarouselIndicators items={items} activeIndex={activeIndex} onClickHandler={goToIndex} />
+          {slides}
+        </Carousel>
+      </Container>
       <div className='bodyContent'>
         <h1>CELEBRATING MUSIC</h1>
       </div>
