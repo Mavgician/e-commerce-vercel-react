@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import "./globals.css";
+import "@/app/globals.css";
 
 import { Navigationbar } from '@/app/components/NavigationBar';
 import { AuthContextProvider } from '@/app/scripts/AuthContextProvider';
