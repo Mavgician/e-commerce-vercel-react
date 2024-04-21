@@ -1,5 +1,10 @@
 body{
-    background-color: rgb(95, 23, 23);
+    background-color: rgb(27, 25, 25);
+}
+a{
+    text-decoration: none;
+    color: white;
+    max-width: 1000px;
 }
 .NavBar{
     margin-top: 55px;
@@ -22,4 +27,31 @@ body{
 }
 .carousel-indicators {
     margin-bottom: 10px;
+}
+.featured-shows{
+    padding: 100px 300px 100px 300px;
+    background-image: url(assets/images/bg-image.png);
+    object-fit: cover;
+    background-size: 100% auto;
+}
+.upcoming-events{
+    padding: 100px 300px 100px 300px;
+}
+.concert{
+    max-width: 330px;
+}
+.concert-content{
+    margin-top: 10px;
+    margin-bottom: 50px;
+}
+.concert-poster>img{
+    border-radius: 2%;
+}
+li{
+    list-style-type: none;
+}
+ul{
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
 }
