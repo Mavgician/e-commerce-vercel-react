@@ -1,8 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import "./globals.css";
+import "@/styles/globals.css";
 
-import { Navigationbar } from '@/app/components/NavigationBar';
-import { AuthContextProvider } from '@/app/scripts/AuthContextProvider';
+import { AuthContextProvider } from '@/scripts/AuthContextProvider';
 
 export const metadata = {
   title: "ConFlix - Get your tickets!",
@@ -14,7 +13,6 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <AuthContextProvider>
-          <Navigationbar />
           {children}
         </AuthContextProvider>
       </body>

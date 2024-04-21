@@ -11,7 +11,7 @@ import {
   NavLink,
 } from 'reactstrap';
 
-import { UserAuth } from '@/app/scripts/AuthContextProvider'
+import { UserAuth } from '@/scripts/AuthContextProvider'
 
 function Navigationbar() {
   const [isOpen, setIsOpen] = useState(false)

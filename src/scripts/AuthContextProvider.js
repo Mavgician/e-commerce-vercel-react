@@ -3,7 +3,7 @@
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useContext, createContext } from 'react';
 
-import { auth } from '@/app/scripts/firebase';
+import { auth } from '@/scripts/firebase';
 
 // Defines the context for entire application
 const AuthContext = createContext()

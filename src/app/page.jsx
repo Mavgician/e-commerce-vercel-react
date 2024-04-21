@@ -26,13 +26,19 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 const items = [
   {
-    src: "https://images1.smtickets.com/images/carousel_16032024164145.jpg",
+    src: "https://firebasestorage.googleapis.com/v0/b/conflix-567b2.appspot.com/o/demo-images%2Fhomepage%2Fcarousel1.jpg?alt=media&token=94cc3109-0494-45b3-b410-5903853bbb8f",
+    caption: "test",
+    header: "test-header",
   },
   {
-    src: "https://images1.smtickets.com/images/carousel_13032024124818.jpg",
+    src: "https://firebasestorage.googleapis.com/v0/b/conflix-567b2.appspot.com/o/demo-images%2Fhomepage%2Fcarousel2.jpg?alt=media&token=fba70b5b-ee67-4687-a90f-007ec054d313",
+    caption: "test",
+    header: "test-header",
   },
   {
-    src: "https://images1.smtickets.com/images/carousel_26012024193335.jpg",
+    src: "https://firebasestorage.googleapis.com/v0/b/conflix-567b2.appspot.com/o/demo-images%2Fhomepage%2Fcarousel3.jpg?alt=media&token=41fdaad3-e47c-4f08-9497-fb5fbf2eb4dd",
+    caption: "test",
+    header: "test-header",
   },
 ];
 
