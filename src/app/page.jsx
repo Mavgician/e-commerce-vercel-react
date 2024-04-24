@@ -39,7 +39,8 @@ const concerts = [
       date: 'April 26, 2024',
       time: '8pm'
     },
-    location: 'New Frontier Theatre'
+    location: 'New Frontier Theatre',
+    ticketid: 9918
   },
   {
     title: 'Awesome name for an awesome concert',
@@ -48,7 +49,8 @@ const concerts = [
       date: 'April 26, 2024',
       time: '8pm'
     },
-    location: 'New Frontier Theatre'
+    location: 'New Frontier Theatre',
+    ticketid: 1124
   },
   {
     title: 'Awesome name for an awesome concert',
@@ -57,7 +59,8 @@ const concerts = [
       date: 'April 26, 2024',
       time: '8pm'
     },
-    location: 'New Frontier Theatre'
+    location: 'New Frontier Theatre',
+    ticketid: 4213
   }
 ]
 
@@ -69,7 +72,8 @@ const upcomingconcerts = [
       date: 'April 26, 2024',
       time: '8pm'
     },
-    location: 'New Frontier Theatre'
+    location: 'New Frontier Theatre',
+    ticketid: 4216
   },
   {
     title: 'Awesome name for an upcoming awesome concert',
@@ -78,7 +82,8 @@ const upcomingconcerts = [
       date: 'April 26, 2024',
       time: '8pm'
     },
-    location: 'New Frontier Theatre'
+    location: 'New Frontier Theatre',
+    ticketid: 7654
   },
   {
     title: 'Awesome name for an upcoming awesome concert',
@@ -87,7 +92,8 @@ const upcomingconcerts = [
       date: 'April 26, 2024',
       time: '8pm'
     },
-    location: 'New Frontier Theatre'
+    location: 'New Frontier Theatre',
+    ticketid: 5114
   }
 ]
 
@@ -101,14 +107,14 @@ export default function Page() {
       <div className="bodyContent">
         <div className="featured-shows">
           <SectionHeader>Featured Shows</SectionHeader>
-          <TicketLayout>
-            {concerts.map((item, idx) => <TicketItem concert_data={item}/>)}
+          <TicketLayout sectionKey={'featuredshows'}>
+            {concerts.map((item, idx) => <TicketItem key={`ticket-${item.ticketid}`} concert_data={item}/>)}
           </TicketLayout>
         </div>
         <div className="upcoming-events">
           <SectionHeader>Upcoming Shows</SectionHeader>
-          <TicketLayout>
-            {upcomingconcerts.map((item, idx) => <TicketItem concert_data={item}/>)}
+          <TicketLayout sectionKey={'featuredshows'}>
+            {upcomingconcerts.map((item, idx) => <TicketItem key={`ticket-${item.ticketid}`} concert_data={item}/>)}
           </TicketLayout>
         </div>
         <div className="footer">

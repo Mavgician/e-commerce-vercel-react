@@ -75,12 +75,12 @@ export function TicketItem({concert_data}) {
   )
 }
 
-export function TicketLayout({children, classname}) {
+export function TicketLayout({children, classname, sectionKey}) {
   try {
     return (
       <Container className={`${classname}`}>
         <Row>
-          {children.map(child => <Col md={6} lg={4} xl={3}>{child}</Col>)}
+          {children.map((child, idx) => <Col md={6} lg={4} xl={3} key={`${sectionKey}-${idx}`}>{child}</Col>)}
         </Row>
       </Container>
     )
