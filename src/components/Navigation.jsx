@@ -13,7 +13,7 @@ import {
 
 import { UserAuth } from '@/scripts/AuthContextProvider'
 
-function Navigationbar() {
+export function Navigationbar() {
   const [isOpen, setIsOpen] = useState(false)
   const auth = UserAuth()
 
@@ -54,5 +54,3 @@ function Navigationbar() {
     </Navbar>
   )
 }
-
-export { Navigationbar }
