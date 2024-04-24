@@ -30,7 +30,7 @@ a{
 }
 .featured-shows{
     padding: 100px 300px 100px 300px;
-    background-image: url(assets/images/bg-image.png);
+    background-image: url(../assets/images/bg-image.png);
     object-fit: cover;
     background-size: 100% auto;
 }
