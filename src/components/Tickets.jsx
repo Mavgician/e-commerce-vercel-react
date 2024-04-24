@@ -32,7 +32,7 @@ export function TicketItem({concert_data}) {
   return (
     <Link href={`tickets/${concert_data.id}`} className="concert text-light" ref={componentroot}>
       <div className="concert-poster">
-        <Image src={concert_data.imageurl} width={componentDim.width} height={componentDim.height} style={{ height: 'auto' }} alt={''} />
+        <Image src={concert_data.imageurl} width={componentDim.width} height={componentDim.height} style={{ height: 'auto', width: '100%' }} alt={''} />
       </div>
       <Container>
         <div className="concert-title text-light">

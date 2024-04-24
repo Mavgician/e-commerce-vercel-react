@@ -37,14 +37,10 @@ a {
 }
 
 .featured-shows{
-    padding: 100px 300px 100px 300px;
+    padding: 100px 0;
     background-image: url(../assets/images/bg-image.png);
     object-fit: cover;
     background-size: 100% auto;
-}
-
-.upcoming-events{
-    padding: 100px 300px 100px 300px;
 }
 
 .concert{
@@ -52,7 +48,14 @@ a {
     display: inline-block;
     background: grey;
     padding-bottom: 20px;
+    margin-bottom: 40px;
     border-radius: 2%;
+    transition: 0.05s;
+}
+
+.concert:hover {
+    filter: brightness(0.25);
+    transition: 0.05s;
 }
 
 .concert-title {
