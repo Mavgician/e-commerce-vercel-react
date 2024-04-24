@@ -1,57 +1,64 @@
-body{
+html, body {
     background-color: rgb(27, 25, 25);
+    color: white
 }
-a{
+
+a {
     text-decoration: none;
-    color: white;
-    max-width: 1000px;
+    color: inherit;
 }
+
 .NavBar{
     margin-top: 55px;
     
 }
+
 .carousel-image {
     width: 100%;
     height: auto;
 }
+
 .carousel-container {
     padding: 0;
 }
+
 .carousel {
     margin: 0;
     padding: 0;
 }
+
 .carousel-item {
     width: 100%;
     height: auto;
 }
+
 .carousel-indicators {
     margin-bottom: 10px;
 }
+
 .featured-shows{
     padding: 100px 300px 100px 300px;
     background-image: url(../assets/images/bg-image.png);
     object-fit: cover;
     background-size: 100% auto;
 }
+
 .upcoming-events{
     padding: 100px 300px 100px 300px;
 }
+
 .concert{
-    max-width: 330px;
-}
-.concert-content{
-    margin-top: 10px;
-    margin-bottom: 50px;
-}
-.concert-poster>img{
+    width: 100%;
+    display: inline-block;
+    background: grey;
+    padding-bottom: 20px;
     border-radius: 2%;
 }
-li{
-    list-style-type: none;
+
+.concert-title {
+    margin: 10px 0
 }
-ul{
-    list-style-type: none;
-    margin: 0px;
-    padding: 0px;
+
+.concert-poster > img{
+    border-radius: 2%;
 }

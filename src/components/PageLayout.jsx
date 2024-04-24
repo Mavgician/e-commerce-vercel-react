@@ -1,0 +1,14 @@
+import {
+  Row,
+  Col,
+  Container
+} from 'reactstrap'
+
+export function SectionHeader({ children }) {
+  return (
+    <Container className='mb-5'>
+      <span>ConFlix Online</span>
+      <h2>{children}</h2>
+    </Container>
+  )
+}

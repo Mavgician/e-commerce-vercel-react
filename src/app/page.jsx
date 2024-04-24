@@ -1,16 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import Image from 'next/image'
-
-import {
-  Container,
-  Carousel,
-  CarouselItem,
-  CarouselIndicators,
-  CarouselCaption,
-} from "reactstrap";
-
 import {
   MDBFooter,
   MDBContainer,
@@ -19,14 +8,10 @@ import {
   MDBIcon,
 } from "mdb-react-ui-kit";
 
-import { Navigationbar } from "@/components/NavigationBar";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCalendar,
-  faClock,
-  faLocationDot,
-} from "@fortawesome/free-solid-svg-icons";
+import { Navigationbar } from "@/components/Navigation";
+import { TicketItem, TicketLayout } from '@/components/Tickets'
+import { SectionHeader } from '@/components/PageLayout'
+import { FullWidthCarousel } from '@/components/Carousel'
 
 const items = [
   {
@@ -46,228 +31,85 @@ const items = [
   },
 ];
 
+const concerts = [
+  {
+    title: 'Awesome name for an awesome concert',
+    imageurl: 'https://ticketnetonline.s3.ap-southeast-1.amazonaws.com/files/events/poster/DebbiGibsonEventPoster.jpg',
+    date: {
+      date: 'April 26, 2024',
+      time: '8pm'
+    },
+    location: 'New Frontier Theatre'
+  },
+  {
+    title: 'Awesome name for an awesome concert',
+    imageurl: 'https://ticketnetonline.s3.ap-southeast-1.amazonaws.com/files/events/poster/DebbiGibsonEventPoster.jpg',
+    date: {
+      date: 'April 26, 2024',
+      time: '8pm'
+    },
+    location: 'New Frontier Theatre'
+  },
+  {
+    title: 'Awesome name for an awesome concert',
+    imageurl: 'https://ticketnetonline.s3.ap-southeast-1.amazonaws.com/files/events/poster/DebbiGibsonEventPoster.jpg',
+    date: {
+      date: 'April 26, 2024',
+      time: '8pm'
+    },
+    location: 'New Frontier Theatre'
+  }
+]
+
+const upcomingconcerts = [
+  {
+    title: 'Awesome name for an upcoming awesome concert',
+    imageurl: 'https://ticketnetonline.s3.ap-southeast-1.amazonaws.com/files/events/poster/DebbiGibsonEventPoster.jpg',
+    date: {
+      date: 'April 26, 2024',
+      time: '8pm'
+    },
+    location: 'New Frontier Theatre'
+  },
+  {
+    title: 'Awesome name for an upcoming awesome concert',
+    imageurl: 'https://ticketnetonline.s3.ap-southeast-1.amazonaws.com/files/events/poster/DebbiGibsonEventPoster.jpg',
+    date: {
+      date: 'April 26, 2024',
+      time: '8pm'
+    },
+    location: 'New Frontier Theatre'
+  },
+  {
+    title: 'Awesome name for an upcoming awesome concert',
+    imageurl: 'https://ticketnetonline.s3.ap-southeast-1.amazonaws.com/files/events/poster/DebbiGibsonEventPoster.jpg',
+    date: {
+      date: 'April 26, 2024',
+      time: '8pm'
+    },
+    location: 'New Frontier Theatre'
+  }
+]
+
 export default function Page() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [animating, setAnimating] = useState(false);
-
-  const next = () => {
-    if (animating) return;
-    const nextIndex = activeIndex === items.length - 1 ? 0 : activeIndex + 1;
-    setActiveIndex(nextIndex);
-  };
-
-  const previous = () => {
-    if (animating) return;
-    const nextIndex = activeIndex === 0 ? items.length - 1 : activeIndex - 1;
-    setActiveIndex(nextIndex);
-  };
-
-  const goToIndex = (newIndex) => {
-    if (animating) return;
-    setActiveIndex(newIndex);
-  };
-
-  const slides = items.map((item, index) => {
-    return (
-      <CarouselItem
-        onExiting={() => setAnimating(true)}
-        onExited={() => setAnimating(false)}
-        key={item.src}
-      >
-        <Image src={item.src} alt={`Slide ${index}`} width={0} height={0} sizes="100vw" style={{ width: '100%', height: 'auto' }}/>
-        <CarouselCaption captionText={item.caption} captionHeader={item.caption} />
-      </CarouselItem>
-    );
-  });
-
   return (
     <main>
       <Navigationbar />
       <div className="NavBar">
-        <Container fluid={true} className="carousel-container">
-          <Carousel activeIndex={activeIndex} next={next} previous={previous}>
-            <CarouselIndicators
-              items={items}
-              activeIndex={activeIndex}
-              onClickHandler={goToIndex}
-            />
-            {slides}
-          </Carousel>
-        </Container>
+        <FullWidthCarousel items={items} indicators={true}/>
       </div>
       <div className="bodyContent">
         <div className="featured-shows">
-          <div className="col-lg-12">
-            <div
-              className="section-title text-lg-left"
-              style={{ height: 67, fontWeight: "bold", color: "white" }}
-            >
-              <span className="sub-title">ConFlix Online</span>
-              <h2 className="title">Featured Shows</h2>
-            </div>
-          </div>
-          <div className="row">
-            <div className="concert col-xl-3 col-lg-4 col-sm-6">
-              <div className="concert-poster">
-                <img
-                  src="https://ticketnetonline.s3.ap-southeast-1.amazonaws.com/files/events/poster/DebbiGibsonEventPoster.jpg"
-                  alt=""
-                />
-              </div>
-              <div className="concert-content">
-                <div className="top-content text-light">
-                  <h6 className="title">
-                    <a href="#">
-                      ELECTRIC YOUTH 35TH ANNIVERSARY SHOW, AN EVENING WITH
-                      DEBBIE
-                    </a>
-                  </h6>
-                </div>
-                <div className="bottom-content">
-                  <ul className="content-desc" style={{ marginBottom: 10 }}>
-                    <li className="text-white">
-                      <span className="duration">
-                        <FontAwesomeIcon
-                          icon={faCalendar}
-                          style={{ color: "#ff0000" }}
-                        />{" "}
-                        April 26, 2024
-                      </span>
-                    </li>
-                    <li className="text-white">
-                      <span className="duration">
-                        <FontAwesomeIcon
-                          icon={faClock}
-                          style={{ color: "#ff0000" }}
-                        />{" "}
-                        8PM
-                      </span>
-                    </li>
-                    <li>
-                      <span className="address text-white">
-                        <FontAwesomeIcon
-                          icon={faLocationDot}
-                          style={{ color: "#ff0000" }}
-                        />{" "}
-                        NEW FRONTIER THEATRE
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div className="concert col-xl-3 col-lg-4 col-sm-6">
-              <div className="concert-poster">
-                <img
-                  src="https://ticketnetonline.s3.ap-southeast-1.amazonaws.com/files/events/poster/DebbiGibsonEventPoster.jpg"
-                  alt=""
-                />
-              </div>
-              <div className="concert-content">
-                <div className="top-content text-light">
-                  <h6 className="title">
-                    <a href="#">
-                      ELECTRIC YOUTH 35TH ANNIVERSARY SHOW, AN EVENING WITH
-                      DEBBIE
-                    </a>
-                  </h6>
-                </div>
-                <div className="bottom-content">
-                  <ul className="content-desc" style={{ marginBottom: 10 }}>
-                    <li className="text-white">
-                      <span className="duration">
-                        <FontAwesomeIcon
-                          icon={faCalendar}
-                          style={{ color: "#ff0000" }}
-                        />{" "}
-                        April 26, 2024
-                      </span>
-                    </li>
-                    <li className="text-white">
-                      <span className="duration">
-                        <FontAwesomeIcon
-                          icon={faClock}
-                          style={{ color: "#ff0000" }}
-                        />{" "}
-                        8PM
-                      </span>
-                    </li>
-                    <li>
-                      <span className="address text-white">
-                        <FontAwesomeIcon
-                          icon={faLocationDot}
-                          style={{ color: "#ff0000" }}
-                        />{" "}
-                        NEW FRONTIER THEATRE
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
+          <SectionHeader>Featured Shows</SectionHeader>
+          <TicketLayout>
+            {concerts.map((item, idx) => <TicketItem concert_data={item}/>)}
+          </TicketLayout>
         </div>
         <div className="upcoming-events">
-          <div className="col-lg-12">
-            <div
-              className="section-title text-lg-center text-light"
-              style={{ height: 67, fontWeight: "bold" }}
-            >
-              <span className="sub-title">ConFlix Online</span>
-              <h2 className="title">Upcoming Events</h2>
-            </div>
-            <div className="row">
-              <div className="concert col-xl-3 col-lg-4 col-sm-6">
-                <div className="concert-poster">
-                  <img
-                    src="https://ticketnetonline.s3.ap-southeast-1.amazonaws.com/files/events/poster/DebbiGibsonEventPoster.jpg"
-                    alt=""
-                  />
-                </div>
-                <div className="concert-content">
-                  <div className="top-content text-light">
-                    <h6 className="title">
-                      <a href="#">
-                        ELECTRIC YOUTH 35TH ANNIVERSARY SHOW, AN EVENING WITH
-                        DEBBIE
-                      </a>
-                    </h6>
-                  </div>
-                  <div className="bottom-content">
-                    <ul className="content-desc" style={{ marginBottom: 10 }}>
-                      <li className="text-white">
-                        <span className="duration">
-                          <FontAwesomeIcon
-                            icon={faCalendar}
-                            style={{ color: "#ff0000" }}
-                          />{" "}
-                          April 26, 2024
-                        </span>
-                      </li>
-                      <li className="text-white">
-                        <span className="duration">
-                          <FontAwesomeIcon
-                            icon={faClock}
-                            style={{ color: "#ff0000" }}
-                          />{" "}
-                          8PM
-                        </span>
-                      </li>
-                      <li>
-                        <span className="address text-white">
-                          <FontAwesomeIcon
-                            icon={faLocationDot}
-                            style={{ color: "#ff0000" }}
-                          />{" "}
-                          NEW FRONTIER THEATRE
-                        </span>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <SectionHeader>Upcoming Shows</SectionHeader>
+          <TicketLayout>
+            {upcomingconcerts.map((item, idx) => <TicketItem concert_data={item}/>)}
+          </TicketLayout>
         </div>
         <div className="footer">
           <MDBFooter
