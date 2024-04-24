@@ -27,7 +27,7 @@ export function TicketItem({concert_data}) {
       width: componentroot.current.offsetWidth,
       height: componentroot.current.offsetHeight
     })
-  }, [componentroot.current])
+  }, [])
 
   return (
     <Link href={`tickets/${concert_data.id}`} className="concert text-light" ref={componentroot}>
