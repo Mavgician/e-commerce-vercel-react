@@ -17,9 +17,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body>
         <AuthContextProvider>
-          <Navigationbar />
           {children}
-          <Footer/>
         </AuthContextProvider>
       </body>
     </html>

@@ -2,6 +2,9 @@ import { TicketItem, TicketLayout } from '@/components/Tickets'
 import { SectionHeader, Section } from '@/components/PageLayout'
 import { FullWidthCarousel } from '@/components/Carousel'
 
+import { Navigationbar } from '@/components/Navigation'
+import { Footer } from '@/components/Footer'
+
 const items = [
   {
     src: "https://firebasestorage.googleapis.com/v0/b/conflix-567b2.appspot.com/o/demo-images%2Fhomepage%2Fcarousel1.jpg?alt=media&token=94cc3109-0494-45b3-b410-5903853bbb8f",
@@ -88,20 +91,24 @@ const upcomingconcerts = [
 
 export default function Page() {
   return (
-    <main>
-      <FullWidthCarousel items={items} indicators={true} />
-      <Section className="featured-shows p-5">
-        <SectionHeader>Featured Shows</SectionHeader>
-        <TicketLayout sectionKey={'featuredshows'}>
-          {concerts.map((item, idx) => <TicketItem key={`ticket-${item.ticketid}`} concert_data={item} />)}
-        </TicketLayout>
-      </Section>
-      <Section className="upcoming-events p-5">
-        <SectionHeader>Upcoming Shows</SectionHeader>
-        <TicketLayout sectionKey={'upcomingshows'}>
-          {upcomingconcerts.map((item, idx) => <TicketItem key={`ticket-${item.ticketid}`} concert_data={item} />)}
-        </TicketLayout>
-      </Section>
-    </main>
+    <>
+      <Navigationbar />
+      <main>
+        <FullWidthCarousel items={items} indicators={true} />
+        <Section className="featured-shows p-5">
+          <SectionHeader>Featured Shows</SectionHeader>
+          <TicketLayout sectionKey={'featuredshows'}>
+            {concerts.map((item, idx) => <TicketItem key={`ticket-${item.ticketid}`} concert_data={item} />)}
+          </TicketLayout>
+        </Section>
+        <Section className="upcoming-events p-5">
+          <SectionHeader>Upcoming Shows</SectionHeader>
+          <TicketLayout sectionKey={'upcomingshows'}>
+            {upcomingconcerts.map((item, idx) => <TicketItem key={`ticket-${item.ticketid}`} concert_data={item} />)}
+          </TicketLayout>
+        </Section>
+      </main>
+      <Footer />
+    </>
   );
 }
