@@ -12,3 +12,11 @@ export function SectionHeader({ children }) {
     </Container>
   )
 }
+
+export function Section({ children, className=null }) {
+  return (
+    <Container fluid={true} className={className}>
+      {children}
+    </Container>
+  )
+}

@@ -1,5 +1,5 @@
 import { TicketItem, TicketLayout } from '@/components/Tickets'
-import { SectionHeader } from '@/components/PageLayout'
+import { SectionHeader, Section } from '@/components/PageLayout'
 import { FullWidthCarousel } from '@/components/Carousel'
 
 const items = [
@@ -89,21 +89,19 @@ const upcomingconcerts = [
 export default function Page() {
   return (
     <main>
-      <div className="NavBar">
-        <FullWidthCarousel items={items} indicators={true} />
-      </div>
-      <div className="featured-shows p-5">
+      <FullWidthCarousel items={items} indicators={true} />
+      <Section className="featured-shows p-5">
         <SectionHeader>Featured Shows</SectionHeader>
         <TicketLayout sectionKey={'featuredshows'}>
           {concerts.map((item, idx) => <TicketItem key={`ticket-${item.ticketid}`} concert_data={item} />)}
         </TicketLayout>
-      </div>
-      <div className="upcoming-events p-5">
+      </Section>
+      <Section className="upcoming-events p-5">
         <SectionHeader>Upcoming Shows</SectionHeader>
-        <TicketLayout sectionKey={'featuredshows'}>
+        <TicketLayout sectionKey={'upcomingshows'}>
           {upcomingconcerts.map((item, idx) => <TicketItem key={`ticket-${item.ticketid}`} concert_data={item} />)}
         </TicketLayout>
-      </div>
+      </Section>
     </main>
   );
 }
