@@ -38,14 +38,14 @@ export function FullWidthCarousel({ items, indicators = false, caption = false, 
         onExited={() => setAnimating(false)}
         key={item.src}
       >
-        <Image src={item.src} alt={`Slide ${index}`} width={0} height={0} sizes="100vw" style={{ width: '100%', height: 'auto' }} />
+        <Image src={item.src} alt={`Slide ${index}`} width={0} height={0} sizes="100vw" style={{ width: '100%', height: '100%' }} />
         { caption ? <CarouselCaption captionText={item.caption} captionHeader={item.caption} /> : null }
       </CarouselItem>
     )
   })
 
   return (
-    <Container fluid={true} className='carousel-container'>
+    <Container fluid={true} className='carousel-container p-0'>
       <Carousel
         activeIndex={activeIndex}
         next={() => {

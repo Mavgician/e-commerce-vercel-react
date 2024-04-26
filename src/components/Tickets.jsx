@@ -23,9 +23,11 @@ export function TicketItem({concert_data}) {
   const [componentDim, setComponentDim] = useState({width: 0, height: 0})
 
   useEffect(() => {
+    let dimensions = componentroot.current.getBoundingClientRect()
+
     setComponentDim({
-      width: componentroot.current.offsetWidth,
-      height: componentroot.current.offsetHeight
+      width: dimensions.width,
+      height: dimensions.height
     })
   }, [])
 
@@ -75,10 +77,10 @@ export function TicketItem({concert_data}) {
   )
 }
 
-export function TicketLayout({children, classname, sectionKey}) {
+export function TicketLayout({children, className, sectionKey}) {
   try {
     return (
-      <Container className={`${classname}`}>
+      <Container className={`${className === null ? '' : className}`}>
         <Row>
           {children.map((child, idx) => <Col md={6} lg={4} xl={3} key={`${sectionKey}-${idx}`}>{child}</Col>)}
         </Row>
@@ -87,7 +89,7 @@ export function TicketLayout({children, classname, sectionKey}) {
   } catch (e) {
     if (e instanceof TypeError) {
       return (
-        <Container className={`${classname}`}>
+        <Container className={`${className === null ? '' : className}`}>
           <h1>no shows available</h1>
         </Container>
       )

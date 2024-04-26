@@ -96,7 +96,7 @@ export default function Page() {
       <main>
         <FullWidthCarousel items={items} indicators={true} />
         <Section className="featured-shows p-5">
-          <SectionHeader>Featured Shows</SectionHeader>
+          <SectionHeader className='text-light'>Featured Shows</SectionHeader>
           <TicketLayout sectionKey={'featuredshows'}>
             {concerts.map((item, idx) => <TicketItem key={`ticket-${item.ticketid}`} concert_data={item} />)}
           </TicketLayout>
