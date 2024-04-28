@@ -81,11 +81,11 @@ function AddTicketModal({ isOpen }) {
   const [available, setAvailable] = useState(false)
   const [price, setPrice] = useState(0)
   const [type, setType] = useState()
-  const [seats, setSeats] = useState([])
+  const [seats, setSeats] = useState({ column: 1, row: 1 })
 
   const [imageurl, setImageurl] = useState()
 
-  function submitHandler() {
+  const submitHandler = () => {
     /* let payload = {
       title: title,
       description: description,
@@ -95,9 +95,52 @@ function AddTicketModal({ isOpen }) {
     } */
   }
 
-  function textFieldHandler(setter, e) {
+  const textFieldHandler = (setter, e) => {
     setter(e.target.value)
   }
+
+  const SeatRenderer = ({table}) => {
+    let final_table = []
+
+    for (let i = 0; i < table.column; i++) {
+      let column = []
+
+      const indexToLetter = (index) => {
+        let letter = ''
+        let repeat = (Math.log(index) / Math.log(26))
+
+        if (repeat >= 1) {
+          for (let i = 0; i < Math.floor(repeat) / 26; i++) {
+            letter += indexToLetter(Math.floor(repeat)-1)
+          }
+        }
+
+        letter += String.fromCharCode((index % 26) + 'A'.charCodeAt(0))
+
+        return letter
+      }
+
+      for (let x = 0; x < table.row; x++) {
+        column.push(
+          <div className='me-2 text-center border p-1'>
+            {`${indexToLetter(Math.pow(26,28))}${x+1}`}
+          </div>
+        )
+      }
+
+      final_table.push(
+        <div className='d-flex'>
+          {column}
+        </div>
+      )
+    }
+
+    return (<div>{final_table}</div>)
+  }
+
+  useEffect(() => {
+
+  }, [seats]);
 
   return (
     <ModalFrame isOpen={isOpen} submit={submitHandler} size='xl'>
@@ -191,7 +234,53 @@ function AddTicketModal({ isOpen }) {
               </Row>
             </Col>
           </Row>
-
+          <Row>
+            <Col xs={4}>
+              <FormGroup>
+                <Label>Seat Type</Label>
+                <Input
+                  placeholder="Type"
+                  value={type}
+                  onChange={(e) => { textFieldHandler(setType, e) }}
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label>Price</Label>
+                <Input
+                  placeholder="Price"
+                  type="number"
+                  value={price}
+                  onChange={(e) => { textFieldHandler(setPrice, e) }}
+                />
+              </FormGroup>
+            </Col>
+            <Col xs={2}>
+              <FormGroup>
+                <Label>Seat Row</Label>
+                <Input
+                  placeholder="Row"
+                  type="number"
+                  value={description}
+                  onChange={(e) => { textFieldHandler(setArtist, e) }}
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label>Seat Column</Label>
+                <Input
+                  placeholder="Column"
+                  type="number"
+                  value={description}
+                  onChange={(e) => { textFieldHandler(setArtist, e) }}
+                />
+              </FormGroup>
+            </Col>
+            <Col>
+              <FormGroup>
+                <Label>Seats View</Label>
+                <SeatRenderer table={seats}/>
+              </FormGroup>
+            </Col>
+          </Row>
         </Form>
       </div>
     </ModalFrame>
