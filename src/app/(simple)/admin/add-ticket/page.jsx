@@ -99,31 +99,28 @@ function AddTicketModal({ isOpen }) {
     setter(e.target.value)
   }
 
-  const SeatRenderer = ({table}) => {
+  const SeatRenderer = ({ table }) => {
     let final_table = []
+
+    const intToLetter = (index) => {
+      let letter = ''
+      let repeat = Math.floor(Math.log(index) / Math.log(26))
+
+      if (repeat > 1) {
+        letter += intToLetter(index / 26)
+      }
+
+      letter += String.fromCharCode((index % 26) + 'A'.charCodeAt(0))
+
+      return letter
+    }
 
     for (let i = 0; i < table.column; i++) {
       let column = []
-
-      const indexToLetter = (index) => {
-        let letter = ''
-        let repeat = (Math.log(index) / Math.log(26))
-
-        if (repeat >= 1) {
-          for (let i = 0; i < Math.floor(repeat) / 26; i++) {
-            letter += indexToLetter(Math.floor(repeat)-1)
-          }
-        }
-
-        letter += String.fromCharCode((index % 26) + 'A'.charCodeAt(0))
-
-        return letter
-      }
-
       for (let x = 0; x < table.row; x++) {
         column.push(
-          <div className='me-2 text-center border p-1'>
-            {`${indexToLetter(Math.pow(26,28))}${x+1}`}
+          <div className='m-1 border d-flex align-items-center justify-content-center' style={{ height: 40, width: 40, flexShrink: 0 }}>
+            {`${intToLetter(i)}${x + 1}`}
           </div>
         )
       }
@@ -131,24 +128,22 @@ function AddTicketModal({ isOpen }) {
       final_table.push(
         <div className='d-flex'>
           {column}
+          <div className='m-1' style={{ height: 40, width: 45, flexShrink: 0 }}></div>
         </div>
       )
     }
 
-    return (<div>{final_table}</div>)
+    return (<div className={'pb-5'} style={{ height: 120, overflow: 'auto' }}>{final_table}</div>)
   }
-
-  useEffect(() => {
-
-  }, [seats]);
 
   return (
     <ModalFrame isOpen={isOpen} submit={submitHandler} size='xl'>
       <div className="text-muted mb-3">
-        <big>Add a ticket</big>
+        <p><big>Add a ticket</big></p>
+        <p className='m-0 mb-1'><b>Generic Details</b></p>
         <Form>
           <Row>
-            <Col>
+            <Col s={12} md={6}>
               <FormGroup>
                 <Label>Event Title</Label>
                 <Input
@@ -169,7 +164,7 @@ function AddTicketModal({ isOpen }) {
                 </Col>
               </FormGroup>
             </Col>
-            <Col>
+            <Col s={12} md={6}>
               <Row>
                 <Col sm={12} md={6}>
                   <FormGroup>
@@ -234,8 +229,15 @@ function AddTicketModal({ isOpen }) {
               </Row>
             </Col>
           </Row>
+          <div className='d-flex mb-1 align-items-center'>
+            <p className='m-0 me-2'><b>Seat Details</b></p>
+            <Button size='sm'>
+              <FontAwesomeIcon icon={faAdd} />
+            </Button>
+          </div>
+          <div className='d-flex align-items-center mt-3'><p className='m-0 me-4'>0</p><hr style={{ flexGrow: 1 }} /></div>
           <Row>
-            <Col xs={4}>
+            <Col s={12} md={4}>
               <FormGroup>
                 <Label>Seat Type</Label>
                 <Input
@@ -254,14 +256,14 @@ function AddTicketModal({ isOpen }) {
                 />
               </FormGroup>
             </Col>
-            <Col xs={2}>
+            <Col s={12} md={2}>
               <FormGroup>
                 <Label>Seat Row</Label>
                 <Input
                   placeholder="Row"
                   type="number"
-                  value={description}
-                  onChange={(e) => { textFieldHandler(setArtist, e) }}
+                  value={seats.row}
+                  onChange={(e) => { setSeats({ column: seats.column, row: parseInt(e.target.value) }) }}
                 />
               </FormGroup>
               <FormGroup>
@@ -269,15 +271,15 @@ function AddTicketModal({ isOpen }) {
                 <Input
                   placeholder="Column"
                   type="number"
-                  value={description}
-                  onChange={(e) => { textFieldHandler(setArtist, e) }}
+                  value={seats.column}
+                  onChange={(e) => { setSeats({ column: parseInt(e.target.value), row: seats.row }) }}
                 />
               </FormGroup>
             </Col>
-            <Col>
+            <Col s={12} md={6}>
               <FormGroup>
                 <Label>Seats View</Label>
-                <SeatRenderer table={seats}/>
+                <SeatRenderer table={seats} />
               </FormGroup>
             </Col>
           </Row>
