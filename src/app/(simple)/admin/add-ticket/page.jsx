@@ -37,7 +37,9 @@ import {
   faEdit,
   faAdd,
   faArrowRight,
-  faArrowLeft
+  faArrowLeft,
+  faArrowDown,
+  faArrowUp
 } from '@fortawesome/free-solid-svg-icons'
 
 import Link from 'next/link'
@@ -71,17 +73,12 @@ function AddTicketModal({ isOpen }) {
   const [title, setTitle] = useState()
   const [description, setDescription] = useState()
 
-  const [seatDetails, setSeatDetails] = useState({})
+  const [seatDetails, setSeatDetails] = useState([{}])
 
   const [artist, setArtist] = useState()
   const [genre, setGenre] = useState()
   const [location, setLocation] = useState()
   const [date, setDate] = useState()
-
-  const [available, setAvailable] = useState(false)
-  const [price, setPrice] = useState(0)
-  const [type, setType] = useState()
-  const [seats, setSeats] = useState({ column: 1, row: 1 })
 
   const [imageurl, setImageurl] = useState()
 
@@ -99,21 +96,21 @@ function AddTicketModal({ isOpen }) {
     setter(e.target.value)
   }
 
+  const intToLetter = (index) => {
+    let letter = ''
+    let repeat = Math.floor(Math.log(index) / Math.log(26))
+
+    if (repeat > 1) {
+      letter += intToLetter(index / 26)
+    }
+
+    letter += String.fromCharCode((index % 26) + 'A'.charCodeAt(0))
+
+    return letter
+  }
+
   const SeatRenderer = ({ table }) => {
     let final_table = []
-
-    const intToLetter = (index) => {
-      let letter = ''
-      let repeat = Math.floor(Math.log(index) / Math.log(26))
-
-      if (repeat > 1) {
-        letter += intToLetter(index / 26)
-      }
-
-      letter += String.fromCharCode((index % 26) + 'A'.charCodeAt(0))
-
-      return letter
-    }
 
     for (let i = 0; i < table.column; i++) {
       let column = []
@@ -136,10 +133,111 @@ function AddTicketModal({ isOpen }) {
     return (<div className={'pb-5'} style={{ height: 120, overflow: 'auto' }}>{final_table}</div>)
   }
 
+  const SeatType = ({data, index}) => {
+    const [price, setPrice] = useState(0)
+    const [type, setType] = useState('Type')
+    const [seats, setSeats] = useState({ column: 1, row: 1 })
+    const [seatsArray, setSeatsArray] = useState([]);
+
+    const [viewable, isViewable] = useState(true)
+
+    const seatHandler = (e) => {
+      const newData = seatDetails.map((seat, idx) => {
+        if (idx === index) {
+          return {
+            available: true,
+            price: price,
+            type: type,
+            seats: seatsArray
+          }
+        }
+      })
+
+      setSeatDetails(newData)
+    }
+
+    useEffect(() => {
+      let temp = []
+
+      for (let i = 0; i < seats.column; i++) {
+        for (let x = 0; x < seats.row; x++) {
+          temp.push(`${intToLetter(i)}${x + 1}`)
+        }        
+      }
+      
+      setSeatsArray(temp)
+    }, [seats])
+
+    return (
+      <Container>
+        <div className='d-flex align-items-center mt-3' onClick={() => { isViewable(!viewable) }} style={{ cursor: 'pointer' }}>
+          <b>
+            <p className='m-0 me-4'>{type}</p>
+          </b>
+          <hr className='me-4' style={{ flexGrow: 1 }} />
+          <FontAwesomeIcon icon={viewable ? faArrowUp : faArrowDown}/>
+        </div>
+        <Row className={viewable ? null : 'd-none'}>
+          <Col s={12} md={4}>
+            <FormGroup>
+              <Label>Seat Type</Label>
+              <Input
+                placeholder="Type"
+                value={type}
+                onChange={(e) => { textFieldHandler(setType, e) }}
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label>Price</Label>
+              <Input
+                placeholder="Price"
+                type="number"
+                value={price}
+                onChange={(e) => { textFieldHandler(setPrice, e) }}
+              />
+            </FormGroup>
+          </Col>
+          <Col s={12} md={2}>
+            <FormGroup>
+              <Label>Seat Row</Label>
+              <Input
+                placeholder="Row"
+                type="number"
+                value={seats.row}
+                onChange={(e) => { setSeats({ column: seats.column, row: parseInt(e.target.value) }) }}
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label>Seat Column</Label>
+              <Input
+                placeholder="Column"
+                type="number"
+                value={seats.column}
+                onChange={(e) => { setSeats({ column: parseInt(e.target.value), row: seats.row }) }}
+              />
+            </FormGroup>
+          </Col>
+          <Col s={12} md={6}>
+            <FormGroup>
+              <Label>Seats View</Label>
+              <SeatRenderer table={seats} />
+            </FormGroup>
+          </Col>
+        </Row>
+      </Container>
+    )
+  }
+
+  const addType = () => {
+
+  }
+
   return (
     <ModalFrame isOpen={isOpen} submit={submitHandler} size='xl'>
       <div className="text-muted mb-3">
-        <p><big>Add a ticket</big></p>
+        <b>
+          <p><big>Add a ticket</big></p>
+        </b>
         <p className='m-0 mb-1'><b>Generic Details</b></p>
         <Form>
           <Row>
@@ -171,7 +269,7 @@ function AddTicketModal({ isOpen }) {
                     <Label>Artist Name</Label>
                     <Input
                       placeholder="Name"
-                      value={description}
+                      value={artist}
                       onChange={(e) => { textFieldHandler(setArtist, e) }}
                     />
                   </FormGroup>
@@ -180,7 +278,7 @@ function AddTicketModal({ isOpen }) {
                     <Input
                       placeholder="Date"
                       type='datetime-local'
-                      value={description}
+                      value={date}
                       onChange={(e) => { textFieldHandler(setDate, e) }}
                     />
                   </FormGroup>
@@ -191,7 +289,7 @@ function AddTicketModal({ isOpen }) {
                     <Input
                       placeholder="Genre"
                       type='select'
-                      value={description}
+                      value={genre}
                       onChange={(e) => { textFieldHandler(setGenre, e) }}
                     >
                       <option>
@@ -221,7 +319,7 @@ function AddTicketModal({ isOpen }) {
                     <Label>Location</Label>
                     <Input
                       placeholder="Location"
-                      value={description}
+                      value={location}
                       onChange={(e) => { textFieldHandler(setLocation, e) }}
                     />
                   </FormGroup>
@@ -231,58 +329,11 @@ function AddTicketModal({ isOpen }) {
           </Row>
           <div className='d-flex mb-1 align-items-center'>
             <p className='m-0 me-2'><b>Seat Details</b></p>
-            <Button size='sm'>
+            <Button size='sm' onClick={addType}>
               <FontAwesomeIcon icon={faAdd} />
             </Button>
           </div>
-          <div className='d-flex align-items-center mt-3'><p className='m-0 me-4'>0</p><hr style={{ flexGrow: 1 }} /></div>
-          <Row>
-            <Col s={12} md={4}>
-              <FormGroup>
-                <Label>Seat Type</Label>
-                <Input
-                  placeholder="Type"
-                  value={type}
-                  onChange={(e) => { textFieldHandler(setType, e) }}
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label>Price</Label>
-                <Input
-                  placeholder="Price"
-                  type="number"
-                  value={price}
-                  onChange={(e) => { textFieldHandler(setPrice, e) }}
-                />
-              </FormGroup>
-            </Col>
-            <Col s={12} md={2}>
-              <FormGroup>
-                <Label>Seat Row</Label>
-                <Input
-                  placeholder="Row"
-                  type="number"
-                  value={seats.row}
-                  onChange={(e) => { setSeats({ column: seats.column, row: parseInt(e.target.value) }) }}
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label>Seat Column</Label>
-                <Input
-                  placeholder="Column"
-                  type="number"
-                  value={seats.column}
-                  onChange={(e) => { setSeats({ column: parseInt(e.target.value), row: seats.row }) }}
-                />
-              </FormGroup>
-            </Col>
-            <Col s={12} md={6}>
-              <FormGroup>
-                <Label>Seats View</Label>
-                <SeatRenderer table={seats} />
-              </FormGroup>
-            </Col>
-          </Row>
+          {seatDetails.map((item, idx) => <SeatType data={item} index={idx}/>)}
         </Form>
       </div>
     </ModalFrame>
