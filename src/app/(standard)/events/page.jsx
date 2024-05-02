@@ -1,4 +1,7 @@
-'use client'
+export const metadata = {
+  title: 'ConFlix - Events',
+  description: 'Ticket reseller for concerts',
+};
 
 function Page() {
   return (
