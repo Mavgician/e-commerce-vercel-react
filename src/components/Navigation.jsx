@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Collapse,
   Navbar,
@@ -18,6 +18,8 @@ export function Navigationbar({ transparent = false, isFixed = true }) {
   const auth = UserAuth();
 
   const toggle = () => setIsOpen(!isOpen);
+
+  useEffect(() => {console.log(auth.loading);}, [auth])
 
   return (
     <>
@@ -52,8 +54,8 @@ export function Navigationbar({ transparent = false, isFixed = true }) {
           </Nav>
           <Nav className='ms-auto' navbar>
             <NavItem>
-              <NavLink href={auth.user ? `/user/${auth.user?.uid}` : '/login'}>
-                muahaha
+              <NavLink href={auth.user ? `/user/${auth.user?.uid}` : '/login'} style={auth.loading ? {pointerEvents: 'none'} : null}>
+                Login
               </NavLink>
             </NavItem>
           </Nav>
