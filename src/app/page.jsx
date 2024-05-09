@@ -1,9 +1,16 @@
+'use client'
 import { TicketItem, TicketLayout } from '@/components/Tickets'
 import { SectionHeader, Section } from '@/components/PageLayout'
 import { FullWidthCarousel } from '@/components/Carousel'
 
 import { Navigationbar } from '@/components/Navigation'
 import { Footer } from '@/components/Footer'
+
+import { useCollectionDataOnce } from 'react-firebase-hooks/firestore'
+import { collection, limit, query } from 'firebase/firestore'
+import { db } from '@/scripts/firebase'
+import { Loader } from '@/components/Loader'
+import { useEffect, useState } from 'react'
 
 const items = [
   {
@@ -23,73 +30,25 @@ const items = [
   },
 ];
 
-const concerts = [
-  {
-    title: 'Awesome name for an awesome concert',
-    imageurl: 'https://ticketnetonline.s3.ap-southeast-1.amazonaws.com/files/events/poster/DebbiGibsonEventPoster.jpg',
-    date: {
-      date: 'April 26, 2024',
-      time: '8pm'
-    },
-    location: 'New Frontier Theatre',
-    ticketid: 9918
-  },
-  {
-    title: 'Awesome name for an awesome concert',
-    imageurl: 'https://ticketnetonline.s3.ap-southeast-1.amazonaws.com/files/events/poster/DebbiGibsonEventPoster.jpg',
-    date: {
-      date: 'April 26, 2024',
-      time: '8pm'
-    },
-    location: 'New Frontier Theatre',
-    ticketid: 1124
-  },
-  {
-    title: 'Awesome name for an awesome concert',
-    imageurl: 'https://ticketnetonline.s3.ap-southeast-1.amazonaws.com/files/events/poster/DebbiGibsonEventPoster.jpg',
-    date: {
-      date: 'April 26, 2024',
-      time: '8pm'
-    },
-    location: 'New Frontier Theatre',
-    ticketid: 4213
-  }
-]
-
-const upcomingconcerts = [
-  {
-    title: 'Awesome name for an upcoming awesome concert',
-    imageurl: 'https://ticketnetonline.s3.ap-southeast-1.amazonaws.com/files/events/poster/DebbiGibsonEventPoster.jpg',
-    date: {
-      date: 'April 26, 2024',
-      time: '8pm'
-    },
-    location: 'New Frontier Theatre',
-    ticketid: 4216
-  },
-  {
-    title: 'Awesome name for an upcoming awesome concert',
-    imageurl: 'https://ticketnetonline.s3.ap-southeast-1.amazonaws.com/files/events/poster/DebbiGibsonEventPoster.jpg',
-    date: {
-      date: 'April 26, 2024',
-      time: '8pm'
-    },
-    location: 'New Frontier Theatre',
-    ticketid: 7654
-  },
-  {
-    title: 'Awesome name for an upcoming awesome concert',
-    imageurl: 'https://ticketnetonline.s3.ap-southeast-1.amazonaws.com/files/events/poster/DebbiGibsonEventPoster.jpg',
-    date: {
-      date: 'April 26, 2024',
-      time: '8pm'
-    },
-    location: 'New Frontier Theatre',
-    ticketid: 5114
-  }
-]
 
 export default function Page() {
+  const [values, loading, error, snapshot] = useCollectionDataOnce(query(collection(db, 'tickets'), limit(4)));
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    if (!loading) {
+      let oldData = [...values]
+
+      for (let i = 0; i < oldData.length; i++) {
+        oldData[i].id = snapshot?.docs[i].id
+      }
+
+      setData(oldData)
+    }
+  }, [loading]);
+
+  if (loading) return <Loader/>
+
   return (
     <>
       <Navigationbar />
@@ -98,13 +57,13 @@ export default function Page() {
         <Section className="featured-shows p-5">
           <SectionHeader className='text-light'>Featured Shows</SectionHeader>
           <TicketLayout sectionKey={'featuredshows'}>
-            {concerts.map((item, idx) => <TicketItem key={`ticket-${item.ticketid}`} concert_data={item} />)}
+            {data.map((item, idx) => <TicketItem key={`ticket-${item.ticketid}`} concert_data={item} />)}
           </TicketLayout>
         </Section>
         <Section className="upcoming-events p-5">
           <SectionHeader>Upcoming Shows</SectionHeader>
           <TicketLayout sectionKey={'upcomingshows'}>
-            {upcomingconcerts.map((item, idx) => <TicketItem key={`ticket-${item.ticketid}`} concert_data={item} />)}
+            {data.map((item, idx) => <TicketItem key={`ticket-${item.ticketid}`} concert_data={item} />)}
           </TicketLayout>
         </Section>
       </main>
