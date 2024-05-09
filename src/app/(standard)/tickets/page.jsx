@@ -4,7 +4,7 @@ import { Loader } from "@/components/Loader";
 import { TicketItem, TicketLayout } from "@/components/Tickets";
 import { db } from "@/scripts/firebase";
 import { collection } from "firebase/firestore";
-import Image from "next/image";
+
 import { useEffect, useState } from "react";
 import { useCollectionDataOnce } from "react-firebase-hooks/firestore";
 
@@ -13,6 +13,9 @@ import {
   Row,
   Col
 } from "reactstrap";
+
+import Image from "next/image";
+import Link from "next/link";
 
 /* export const metadata = {
   title: 'ConFlix - Tickets',
@@ -44,11 +47,11 @@ function Page() {
           <Col className="d-flex align-items-center justify-content-end">
             <Image src={values[0]?.poster_image_url} alt='' height={0} width={0} sizes="100%" style={{ height: 'auto', width: '100%' }} />
           </Col>
-          <Col className="text-white">
+          <Col className="text-dark">
             <h4 className='m-0'>{values[0]?.title}</h4>
             <h1 className='m-0'>{values[0]?.details?.artist}</h1>
             <p className='m-0 mb-4'>{values[0]?.details?.location}</p>
-            <div className='btn btn-outline-danger'>BUY TICKETS NOW!</div>
+            <Link href={`/tickets/${values[0].id}`} className='btn btn-outline-danger'>BUY TICKETS NOW!</Link>
           </Col>
         </Row>
       </Container>
