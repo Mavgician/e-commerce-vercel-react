@@ -13,6 +13,11 @@ import {
   startAfter,
   endBefore,
   limitToLast,
+  deleteDoc,
+  doc,
+  serverTimestamp,
+  setDoc,
+  addDoc,
 } from 'firebase/firestore';
 
 import {
@@ -44,65 +49,36 @@ import {
 
 import Link from 'next/link';
 import { ModalFrame } from '@/components/SimpleModal';
+import { useRouter } from 'next/navigation';
 
-// Set viewable document limit the query
+// Set viewable document limit
 const doc_limit = 5;
 
 // Firebase references for fetching
 const collectionRef = collection(db, 'tickets');
 const queryRef = query(collectionRef, orderBy('title'), limit(doc_limit));
 
-function ConfirmationModal({ submit, isOpen, children }) {
-  return (
-    <ModalFrame isOpen={isOpen} submit={submit}>
-      <div className='text-danger mb-3 d-block fw-bold'>
-        <big>Are you sure?</big>
-      </div>
-      <p>{children}</p>
-    </ModalFrame>
-  );
-}
+const intToLetter = (index) => {
+  let letter = '';
+  let repeat = Math.floor(Math.log(index) / Math.log(26));
 
-function AddTicketModal({ isOpen }) {
-  // State for input forms
-  const [title, setTitle] = useState();
-  const [description, setDescription] = useState();
+  if (repeat > 1) {
+    letter += intToLetter(index / 26);
+  }
 
-  const [seatDetails, setSeatDetails] = useState([{}]);
+  letter += String.fromCharCode((index % 26) + 'A'.charCodeAt(0));
 
-  const [artist, setArtist] = useState();
-  const [genre, setGenre] = useState();
-  const [location, setLocation] = useState();
-  const [date, setDate] = useState();
+  return letter;
+};
 
-  const [imageurl, setImageurl] = useState();
+const SeatType = ({ setter, allseats, index }) => {
+  const [price, setPrice] = useState(0);
+  const [type, setType] = useState('Type');
+  const [seatsTable, setSeatsTable] = useState({ column: 1, row: 1 });
 
-  const submitHandler = () => {
-    /* let payload = {
-      title: title,
-      description: description,
-      poster_image_url: imageurl,
-      details: details,
-      seat: seatDetails
-    } */
-  };
+  const [viewable, isViewable] = useState(true);
 
-  const textFieldHandler = (setter, e) => {
-    setter(e.target.value);
-  };
-
-  const intToLetter = (index) => {
-    let letter = '';
-    let repeat = Math.floor(Math.log(index) / Math.log(26));
-
-    if (repeat > 1) {
-      letter += intToLetter(index / 26);
-    }
-
-    letter += String.fromCharCode((index % 26) + 'A'.charCodeAt(0));
-
-    return letter;
-  };
+  let temp = [];
 
   const SeatRenderer = ({ table }) => {
     let final_table = [];
@@ -139,125 +115,184 @@ function AddTicketModal({ isOpen }) {
     );
   };
 
-  const SeatType = ({ data, index }) => {
-    const [price, setPrice] = useState(0);
-    const [type, setType] = useState('Type');
-    const [seats, setSeats] = useState({ column: 1, row: 1 });
-    const [seatsArray, setSeatsArray] = useState([]);
+  const updateSeatIndex = (e, type = '') => {
+    let seats = allseats
+    let formData = e.target.value
+    let data = { availability: true }
+    let tempSize = {}
 
-    const [viewable, isViewable] = useState(true);
+    //TODO: This part is bugged. I don't know how to fix it or how the bug works.
+    //Bug Description: tempSize of seats table is misaligned with expected output
 
-    const seatHandler = (e) => {
-      const newData = seatDetails.map((seat, idx) => {
-        if (idx === index) {
-          return {
-            available: true,
-            price: price,
-            type: type,
-            seats: seatsArray,
-          };
+    switch (type) {
+      case 'price':
+        data.price = formData
+        break
+      case 'type':
+        data.type = formData
+        break
+      case 'column':
+        tempSize = { ...seatsTable, column: parseInt(formData) }
+      case 'row':
+        tempSize = { ...seatsTable, row: parseInt(formData) }
+
+        for (let i = 0; i < tempSize.column; i++) {
+          for (let x = 0; x < tempSize.row; x++) {
+            temp.push(`${intToLetter(i)}${x + 1}`);
+          }
         }
-      });
 
-      setSeatDetails(newData);
-    };
+        data.seats = temp
+        break
 
-    useEffect(() => {
-      let temp = [];
+      default:
+        break
+    }
 
-      for (let i = 0; i < seats.column; i++) {
-        for (let x = 0; x < seats.row; x++) {
-          temp.push(`${intToLetter(i)}${x + 1}`);
-        }
-      }
-
-      setSeatsArray(temp);
-    }, [seats]);
-
-    return (
-      <Container>
-        <div
-          className='d-flex align-items-center mt-3'
-          onClick={() => {
-            isViewable(!viewable);
-          }}
-          style={{ cursor: 'pointer' }}
-        >
-          <b>
-            <p className='m-0 me-4'>{type}</p>
-          </b>
-          <hr className='me-4' style={{ flexGrow: 1 }} />
-          <FontAwesomeIcon icon={viewable ? faArrowUp : faArrowDown} />
-        </div>
-        <Row className={viewable ? null : 'd-none'}>
-          <Col s={12} md={4}>
-            <FormGroup>
-              <Label>Seat Type</Label>
-              <Input
-                placeholder='Type'
-                value={type}
-                onChange={(e) => {
-                  textFieldHandler(setType, e);
-                }}
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label>Price</Label>
-              <Input
-                placeholder='Price'
-                type='number'
-                value={price}
-                onChange={(e) => {
-                  textFieldHandler(setPrice, e);
-                }}
-              />
-            </FormGroup>
-          </Col>
-          <Col s={12} md={2}>
-            <FormGroup>
-              <Label>Seat Row</Label>
-              <Input
-                placeholder='Row'
-                type='number'
-                value={seats.row}
-                onChange={(e) => {
-                  setSeats({
-                    column: seats.column,
-                    row: parseInt(e.target.value),
-                  });
-                }}
-              />
-            </FormGroup>
-            <FormGroup>
-              <Label>Seat Column</Label>
-              <Input
-                placeholder='Column'
-                type='number'
-                value={seats.column}
-                onChange={(e) => {
-                  setSeats({
-                    column: parseInt(e.target.value),
-                    row: seats.row,
-                  });
-                }}
-              />
-            </FormGroup>
-          </Col>
-          <Col s={12} md={6}>
-            <FormGroup>
-              <Label>Seats View</Label>
-              <SeatRenderer table={seats} />
-            </FormGroup>
-          </Col>
-        </Row>
-      </Container>
-    );
+    seats[index] = { ...allseats[index], ...data }
+    setter(seats);
   };
 
-  const addType = () => {};
+  return (
+    <Container>
+      <div
+        className='d-flex align-items-center mt-3'
+        onClick={() => {
+          isViewable(!viewable);
+        }}
+        style={{ cursor: 'pointer' }}
+      >
+        <b>
+          <p className='m-0 me-4'>{type}</p>
+        </b>
+        <hr className='me-4' style={{ flexGrow: 1 }} />
+        <FontAwesomeIcon icon={viewable ? faArrowUp : faArrowDown} />
+      </div>
+      <Row className={viewable ? null : 'd-none'}>
+        <Col s={12} md={4}>
+          <FormGroup>
+            <Label>Seat Type</Label>
+            <Input
+              placeholder='Type'
+              value={type}
+              onChange={(e) => {
+                setType(e.target.value)
+                updateSeatIndex(e, 'type');
+              }}
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label>Price</Label>
+            <Input
+              placeholder='Price'
+              type='number'
+              value={price}
+              onChange={(e) => {
+                setPrice(parseInt(e.target.value))
+                updateSeatIndex(e, 'price');
+              }}
+            />
+          </FormGroup>
+        </Col>
+        <Col s={12} md={2}>
+          <FormGroup>
+            <Label>Seat Row</Label>
+            <Input
+              placeholder='Row'
+              type='number'
+              value={seatsTable.row}
+              onChange={(e) => {
+                setSeatsTable({
+                  column: seatsTable.column,
+                  row: parseInt(e.target.value),
+                });
+                updateSeatIndex(e, 'row')
+              }}
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label>Seat Column</Label>
+            <Input
+              placeholder='Column'
+              type='number'
+              value={seatsTable.column}
+              onChange={(e) => {
+                setSeatsTable({
+                  column: parseInt(e.target.value),
+                  row: seatsTable.row,
+                });
+                updateSeatIndex(e, 'column')
+              }}
+            />
+          </FormGroup>
+        </Col>
+        <Col s={12} md={6}>
+          <FormGroup>
+            <Label>Seats View</Label>
+            <SeatRenderer table={seatsTable} />
+          </FormGroup>
+        </Col>
+      </Row>
+    </Container>
+  );
+};
+
+function ConfirmationModal({ submit, isOpen, toggle, children }) {
+  return (
+    <ModalFrame toggle={toggle} isOpen={isOpen} submit={submit}>
+      <div className='text-danger mb-3 d-block fw-bold'>
+        <big>Are you sure?</big>
+      </div>
+      <p>{children}</p>
+    </ModalFrame>
+  );
+}
+
+function SetTicketModal({ isOpen, toggle, update, setUpdate }) {
+  // State for input forms
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+
+  const [seatDetails, setSeatDetails] = useState([{seats: [], available: false}]);
+
+  const [artist, setArtist] = useState('');
+  const [genre, setGenre] = useState('');
+  const [location, setLocation] = useState('');
+  const [date, setDate] = useState('');
+
+  const [imageurl, setImageurl] = useState('https://ticketnetonline.s3.ap-southeast-1.amazonaws.com/files/events/poster/DebbiGibsonEventPoster.jpg');
+
+  const submitHandler = async (id) => {
+    const payload = {
+      title: title,
+      description: description,
+      poster_image_url: imageurl,
+      details: {
+        artist: artist,
+        genre: genre,
+        location: location,
+        date: serverTimestamp()
+      },
+      seat: seatDetails
+    }
+
+    if (id) await setDoc(doc(db, 'tickets', id), payload)
+    else await addDoc(collection(db, 'tickets'), payload)
+
+    setUpdate(!update)
+    return toggle(false)
+  }
+
+  const textFieldHandler = (setter, e) => {
+    setter(e.target.value);
+  };
+
+  const addType = () => {
+    setSeatDetails([...seatDetails, {}])
+  };
 
   return (
-    <ModalFrame isOpen={isOpen} submit={submitHandler} size='xl'>
+    <ModalFrame toggle={toggle} isOpen={isOpen} submit={submitHandler} size='xl'>
       <div className='text-muted mb-3'>
         <b>
           <p>
@@ -362,7 +397,7 @@ function AddTicketModal({ isOpen }) {
             </Button>
           </div>
           {seatDetails.map((item, idx) => (
-            <SeatType key={`stype-${idx}`} data={item} index={idx} />
+            <SeatType key={`stype-${idx}`} setter={setSeatDetails} allseats={seatDetails} index={idx} />
           ))}
         </Form>
       </div>
@@ -370,8 +405,9 @@ function AddTicketModal({ isOpen }) {
   );
 }
 
-function TableTicketRow({ data, id }) {
+function TableTicketRow({ data, id, update, updateState }) {
   // Function for each entry in tickets table from firebase
+  const [confirmModal, setConfirmModal] = useState(false);
 
   function SeatType({ seat_data }) {
     return (
@@ -396,51 +432,57 @@ function TableTicketRow({ data, id }) {
     );
   }
 
+  async function deleteTicket() {
+    await deleteDoc(doc(db, 'tickets', id))
+    update(!updateState)
+    setConfirmModal(false)
+  }
+
   return (
-    <tr>
-      <td className='pl-4 text-muted'>
-        <span>{id}</span>
-      </td>
-      <td>
-        <span className='text-muted'>{data.title}</span>
-      </td>
-      <td className='text-muted'>{data.description}</td>
-      <td className='text-muted'>
-        <div>
-          <span className='fw-bold'>Artist: </span>
-          {data.details.artist}
-        </div>
-        <div>
-          <span className='fw-bold'>Genre: </span>
-          {data.details.genre}
-        </div>
-        <div>
-          <span className='fw-bold'>Location: </span>
-          {data.details.location}
-        </div>
-        <div>
-          <span className='fw-bold'>Date: </span>
-          {/* data.details.date.toDate().toString() */}
-        </div>
-      </td>
-      <td className='text-muted'>
-        {data.seat.map((seat, idx) => (
-          <SeatType key={`${data.id}-${idx}-seat`} seat_data={seat} />
-        ))}
-      </td>
-      <td className='text-muted'>
-        <span className='fw-bold'>Image url: </span>
-        <Link href={data.poster_image_url}>link</Link>
-      </td>
-      <td>
-        <Button className='me-2' outline>
-          <FontAwesomeIcon icon={faEdit} />
-        </Button>
-        <Button className='me-2' outline color='danger'>
-          <FontAwesomeIcon icon={faTrash} />
-        </Button>
-      </td>
-    </tr>
+    <>
+      <tr>
+        <td className='pl-4 text-muted'>
+          <span>{id}</span>
+        </td>
+        <td>
+          <span className='text-muted'>{data.title}</span>
+        </td>
+        <td className='text-muted'>{data.description}</td>
+        <td className='text-muted'>
+          <div>
+            <span className='fw-bold'>Artist: </span>
+            {data.details.artist}
+          </div>
+          <div>
+            <span className='fw-bold'>Genre: </span>
+            {data.details.genre}
+          </div>
+          <div>
+            <span className='fw-bold'>Location: </span>
+            {data.details.location}
+          </div>
+          <div>
+            <span className='fw-bold'>Date: </span>
+            {/* data.details.date.toDate().toString() */}
+          </div>
+        </td>
+        <td className='text-muted'>
+          {data.seat.map((seat, idx) => (
+            <SeatType key={`${data.id}-${idx}-seat`} seat_data={seat} />
+          ))}
+        </td>
+        <td className='text-muted'>
+          <span className='fw-bold'>Image url: </span>
+          <Link href={data.poster_image_url}>link</Link>
+        </td>
+        <td>
+          <Button className='me-2' outline color='danger' onClick={() => { setConfirmModal(true) }}>
+            <FontAwesomeIcon icon={faTrash} />
+          </Button>
+        </td>
+      </tr>
+      <ConfirmationModal toggle={setConfirmModal} isOpen={confirmModal} submit={deleteTicket}>You want to delete {id}?</ConfirmationModal>
+    </>
   );
 }
 
@@ -450,6 +492,10 @@ function Page() {
 
   const [lastSeenDoc, setLastSeenDoc] = useState();
   const [firstSeenDoc, setFirstSeenDoc] = useState();
+
+  const [setTicketModal, setSetTicketModal] = useState(false);
+
+  const [refreshState, setRefreshState] = useState(false);
 
   function setDocStates(snapshot) {
     if (snapshot.docs.length === 0) return;
@@ -484,7 +530,7 @@ function Page() {
       setTicketCount(count.data().count);
       setDocs(snapshot.docs);
     })();
-  }, []);
+  }, [refreshState]);
 
   return (
     <main>
@@ -494,7 +540,7 @@ function Page() {
             <CardTitle className='m-0 me-1'>
               <h5 className='m-0'>Add tickets to database</h5>
             </CardTitle>
-            <Button size='sm' className='mx-1' outline>
+            <Button size='sm' className='mx-1' outline onClick={() => setSetTicketModal(true)}>
               <FontAwesomeIcon icon={faAdd} />
             </Button>
             <small className='text-muted me-1 ms-auto'>
@@ -527,6 +573,8 @@ function Page() {
                       data={doc.data()}
                       id={doc.id}
                       key={doc.id}
+                      update={setRefreshState}
+                      updateState={refreshState}
                     />
                   ))}
                 </tbody>
@@ -534,8 +582,7 @@ function Page() {
             </div>
           </CardBody>
         </Card>
-        <ConfirmationModal>test</ConfirmationModal>
-        <AddTicketModal isOpen={true}></AddTicketModal>
+        <SetTicketModal toggle={setSetTicketModal} isOpen={setTicketModal} update={refreshState} setUpdate={setRefreshState}/>
       </Container>
     </main>
   );

@@ -21,6 +21,7 @@ import Image from 'next/image'
 export function TicketItem({concert_data}) {
   const componentroot = useRef()
   const [componentDim, setComponentDim] = useState({width: 0, height: 0})
+  const date = concert_data?.details?.date.toDate()
 
   useEffect(() => {
     let dimensions = componentroot.current.getBoundingClientRect()
@@ -32,13 +33,13 @@ export function TicketItem({concert_data}) {
   }, [])
 
   return (
-    <Link href={`tickets/${concert_data.id}`} className="concert text-light" ref={componentroot}>
+    <Link href={`tickets/${concert_data?.id}`} className="concert text-light" ref={componentroot}>
       <div className="concert-poster">
-        <Image src={concert_data.imageurl} width={componentDim.width} height={componentDim.height} style={{ height: 'auto', width: '100%' }} alt={''} />
+        <Image src={concert_data?.poster_image_url} width={componentDim.width} height={componentDim.height} style={{ height: 'auto', width: '100%' }} alt={''} />
       </div>
       <Container>
         <div className="concert-title text-light">
-          <b>{concert_data.title}</b>
+          <b>{concert_data?.title}</b>
         </div>
         <div>
           <Row>
@@ -61,13 +62,13 @@ export function TicketItem({concert_data}) {
             </Col>
             <Col md={10} s={10} xs={10}>
               <div>
-                {concert_data.date.date}
+                {date.toLocaleDateString()}
               </div>
               <div>
-                {concert_data.date.time}
+                {`${date.getHours()}:${date.getMinutes()}`}
               </div>
               <div>
-                {concert_data.location}
+                {concert_data?.details?.location}
               </div>
             </Col>
           </Row>
@@ -77,7 +78,7 @@ export function TicketItem({concert_data}) {
   )
 }
 
-export function TicketLayout({children, className, sectionKey}) {
+export function TicketLayout({children, className={}, sectionKey}) {
   try {
     return (
       <Container className={`${className === null ? '' : className}`}>
