@@ -1,30 +1,70 @@
 'use client'
 
-function Page() {
-  return (
-    <main>
-      {
-      /*
-        Lagay niyo dito pinaka layout ng home page for the store. Naka integrate ung bootstrap dito so all goods tayo dun.
-        Ang hindi lang nakaintegrate sa root component is ung javascript ng bootstrap. So kung mag ca1ousel or something,
-        sabihan niyo ko, kasi medj mahirap iexplain kung paano i allow un - 
+import Link from 'next/link';
 
-        Small explanation:
-          Next.js is mostly server-side rendered, ang pag import ng javascript is not "server" friendly. Need nating i-convert
-          yung component into a client component para maimport ung javascript. This is actually better para forced tayo gumawa
-          ng components for various things on a page. Slideshow component na lalagyan lang ng picture array etc. etc.
-        
-        Watch niyo rin ung sinend ko sa GC natin para mafamiliarize kayo sa framework. I suggest video number 3 para magets niyo
-        ung routing ng pages. Kung paano siya nahahandle ng server ni next.js.
+import { auth, db } from '@/scripts/firebase';
+import { useSignOut } from 'react-firebase-hooks/auth';
+import { useRouter } from 'next/navigation'
 
-        PAMPADALI TO NG BUHAY NATIN OKAY >:(
+import {
+  Button,
+  Container
+} from 'reactstrap'
 
-        -Mavs ang leader ng bayan
-      */
-      }
-      <h1>You have reached the template page!</h1>
-    </main>
-  )
+import { UserAuth } from '@/scripts/AuthContextProvider';
+
+import { doc } from 'firebase/firestore';
+import { useDocumentDataOnce } from 'react-firebase-hooks/firestore';
+
+
+function Page({ params }) {
+  const user = UserAuth()
+  const [value, d_loading, d_error, snapshot, reload] = useDocumentDataOnce(doc(db, 'user', params.userid))
+  const [signOut, loading, error] = useSignOut(auth);
+  const router = useRouter()
+
+  async function logout() {
+    await signOut()
+    router.push('/')
+  }
+
+  if (d_loading) return <main></main>
+
+  if (value.account_type === 'admin') {
+    return(
+      <main>
+        <Container className='p-5'>
+          <h1>Hello {user.user?.displayName}</h1>
+          <div className='my-3'>
+            <h3>Actions:</h3>
+            <Button color='danger' size='lg' onClick={logout}>Logout</Button>
+            <Link className='btn btn-danger btn-lg ms-3' href={'/admin/add-ticket'}>Add a ticket</Link>
+          </div>
+          <div className='my-3'>
+            <h3>Danger Zone:</h3>
+            <Button color='danger' size='lg'>Delete account</Button>
+          </div>
+        </Container>
+      </main>
+    )
+  } else {
+    return (
+      <main>
+        <Container className='p-5'>
+          <h1>Hello {user.user?.displayName}</h1>
+          <div className='my-3'>
+            <h3>Actions:</h3>
+            <Button color='danger' size='lg' onClick={logout}>Logout</Button>
+          </div>
+          <div className='my-3'>
+            <h3>Danger Zone:</h3>
+            <Button color='danger' size='lg'>Delete account</Button>
+          </div>
+        </Container>
+      </main>
+    )
+  }
+  
 }
 
 export default Page

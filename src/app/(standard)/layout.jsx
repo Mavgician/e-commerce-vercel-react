@@ -1,11 +1,15 @@
+'use client'
+
 import { Navigationbar } from '@/components/Navigation';
 import { Footer } from '@/components/Footer';
-
-import 'bootstrap/dist/css/bootstrap.min.css';
-
-import "@/styles/globals.css";
+import { UserAuth } from '@/scripts/AuthContextProvider';
+import { Loader } from '@/components/Loader';
 
 export default function Layout({ children }) {
+  const user = UserAuth()
+
+  if (user.loading) return <Loader/>
+
   return (
     <>
       <Navigationbar />

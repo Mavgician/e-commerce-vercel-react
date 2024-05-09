@@ -1,28 +1,51 @@
 'use client'
 
-function Page() {
+import Image from "next/image"
+
+import { useDocumentDataOnce } from 'react-firebase-hooks/firestore'
+
+import { SectionHeader } from "@/components/PageLayout"
+import {
+  Container,
+  Row,
+  Col,
+  Button
+} from "reactstrap"
+import { doc } from "firebase/firestore"
+import { db } from "@/scripts/firebase"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+
+function Page({ params }) {
+  const [values, loading, error, snapshot] = useDocumentDataOnce(doc(db, 'tickets', params.ticketid));
+  const date = values?.details?.date.toDate()
+  const router = useRouter()
+
+  function buyHandler() {
+    router.push(`/checkout/${params.ticketid}`)
+  }
+
   return (
-    <main>
-      {
-      /*
-        Lagay niyo dito pinaka layout ng home page for the store. Naka integrate ung bootstrap dito so all goods tayo dun.
-        Ang hindi lang nakaintegrate sa root component is ung javascript ng bootstrap. So kung mag ca1ousel or something,
-        sabihan niyo ko, kasi medj mahirap iexplain kung paano i allow un - 
-
-        Small explanation:
-          Next.js is mostly server-side rendered, ang pag import ng javascript is not "server" friendly. Need nating i-convert
-          yung component into a client component para maimport ung javascript. This is actually better para forced tayo gumawa
-          ng components for various things on a page. Slideshow component na lalagyan lang ng picture array etc. etc.
-        
-        Watch niyo rin ung sinend ko sa GC natin para mafamiliarize kayo sa framework. I suggest video number 3 para magets niyo
-        ung routing ng pages. Kung paano siya nahahandle ng server ni next.js.
-
-        PAMPADALI TO NG BUHAY NATIN OKAY >:(
-
-        -Mavs ang leader ng bayan
-      */
-      }
-      <h1>You have reached the template page!</h1>
+    <main className="py-5">
+      <Container>
+        <SectionHeader>
+          Tickets
+        </SectionHeader>
+        <Row>
+          <Col className="d-flex justify-content-end">
+            <Image src={values?.poster_image_url} alt='' height={0} width={0} sizes='100%' style={{ height: 'auto', width: '70%' }} />
+          </Col>
+          <Col className="px-4">
+            <div className="d-flex align-items-center mb-3">
+              <h1>{values?.title}</h1>
+              <Button onClick={buyHandler} className="ms-4" outline color="danger">Get tickets</Button>
+            </div>
+            <h4>{values?.details?.artist}</h4>
+            <h4>{values?.details?.location} {date ? `${date.getHours()}:${date.getMinutes()}` : ''}</h4>
+            <p>{values?.description}</p>
+          </Col>
+        </Row>
+      </Container>
     </main>
   )
 }
