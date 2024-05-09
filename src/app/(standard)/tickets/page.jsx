@@ -39,7 +39,7 @@ function Page() {
 
   return (
     <main>
-      <Container className="d-flex align-items-center justify-content-center bg-black" style={{ height: '75vh' }}>
+      <Container className="d-flex align-items-center justify-content-center" style={{ height: '75vh' }}>
         <Row>
           <Col className="d-flex align-items-center justify-content-end">
             <Image src={values[0]?.poster_image_url} alt='' height={0} width={0} sizes="100%" style={{ height: 'auto', width: '100%' }} />
