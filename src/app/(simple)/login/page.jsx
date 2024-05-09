@@ -1,5 +1,7 @@
 'use client'
 
+import Image from 'next/image';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 
@@ -15,28 +17,31 @@ import {
   Col,
 } from 'reactstrap'
 
-import { auth } from '@/scripts/firebase'
+import { auth, db } from '@/scripts/firebase'
 
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
+
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 
 export default function Page() {
   const [ signInWithGoogle, user_Google, loading_Google, error_Google ] = useSignInWithGoogle(auth)
-  const [ signInWithFaceboook, user_Facebook, loading_Facebook, error_Facebook ] = useSignInWithFacebook(auth)
-  const [signOut, loading, error] = useSignOut(auth);
-
   const router = useRouter()
 
   const social = {height: 50,  aspectRatio: 1, borderRadius: '50%'}
 
   async function googleLogin() {
-    await signInWithGoogle()
-    router.back()
-  }
+    let user = await signInWithGoogle()
 
-  async function logout() {
-    await signOut()
-    router.push('/')
+    if ((await getDoc(doc(db, 'user', user.user.uid))).exists()) return router.back()
+
+    await setDoc(doc(db, 'user', user.user.uid), {
+      d_name: user.user.displayName,
+      email: user.user.email,
+      account_type: 'user',
+      account_image: user.user.photoURL
+    })
+
+    return router.back()
   }
 
   return (
@@ -48,9 +53,6 @@ export default function Page() {
               <h1 className='mb-4'>Sign In</h1>
               <Button className='mx-1' style={social} outline={true} color='primary' onClick={googleLogin}>
                 <FontAwesomeIcon icon={faGoogle} />
-              </Button>
-              <Button className='mx-1' style={social} outline={true} color='primary' onClick={logout}>
-                <FontAwesomeIcon icon={faLongArrowLeft} />
               </Button>
               <p className='text-muted mt-3'>or use your account</p>
               <FormGroup floating>
