@@ -1,5 +1,8 @@
 'use client';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
+
 import { useEffect, useState } from 'react';
 import {
   Collapse,
@@ -19,7 +22,7 @@ export function Navigationbar({ transparent = false, isFixed = true }) {
 
   const toggle = () => setIsOpen(!isOpen);
 
-  useEffect(() => {console.log(auth.loading);}, [auth])
+  useEffect(() => {}, [auth])
 
   return (
     <>
@@ -46,16 +49,13 @@ export function Navigationbar({ transparent = false, isFixed = true }) {
               <NavLink href='/tickets'>Tickets</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href='/events'>Events</NavLink>
-            </NavItem>
-            <NavItem>
               <NavLink href='/about-us'>About Us</NavLink>
             </NavItem>
           </Nav>
           <Nav className='ms-auto' navbar>
             <NavItem>
               <NavLink href={auth.user ? `/user/${auth.user?.uid}` : '/login'} style={auth.loading ? {pointerEvents: 'none'} : null}>
-                Login
+                {auth.user ? <FontAwesomeIcon icon={faUser}/> : 'Login' }
               </NavLink>
             </NavItem>
           </Nav>
