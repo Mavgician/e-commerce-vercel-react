@@ -35,7 +35,7 @@ function Page({ params }) {
               <Button className="ms-4" outline color="danger">Get tickets</Button>
             </div>
             <h4>{values?.details?.artist}</h4>
-            <h4>{values?.details?.location} {`${date.getHours()}:${date.getMinutes()}`}</h4>
+            <h4>{values?.details?.location} {date ? `${date.getHours()}:${date.getMinutes()}` : ''}</h4>
             <p>{values?.description}</p>
           </Col>
         </Row>
