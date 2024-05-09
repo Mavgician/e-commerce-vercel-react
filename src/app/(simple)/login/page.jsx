@@ -24,10 +24,10 @@ import { useRouter } from 'next/navigation';
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 
 export default function Page() {
-  const [ signInWithGoogle, user_Google, loading_Google, error_Google ] = useSignInWithGoogle(auth)
+  const [signInWithGoogle, user_Google, loading_Google, error_Google] = useSignInWithGoogle(auth)
   const router = useRouter()
 
-  const social = {height: 50,  aspectRatio: 1, borderRadius: '50%'}
+  const social = { height: 50, aspectRatio: 1, borderRadius: '50%' }
 
   async function googleLogin() {
     let user = await signInWithGoogle()
@@ -51,10 +51,11 @@ export default function Page() {
           <div className='w-25'>
             <center>
               <h1 className='mb-4'>Sign In</h1>
+              <h3>Google</h3>
               <Button className='mx-1' style={social} outline={true} color='primary' onClick={googleLogin}>
                 <FontAwesomeIcon icon={faGoogle} />
               </Button>
-              <p className='text-muted mt-3'>or use your account</p>
+              {/* <p className='text-muted mt-3'>or use your account</p>
               <FormGroup floating>
                 <Input
                   placeholder='Email'
@@ -78,7 +79,7 @@ export default function Page() {
                 <Button block>
                   Sign In
                 </Button>
-              </div>
+              </div> */}
             </center>
           </div>
         </Col>
@@ -89,9 +90,9 @@ export default function Page() {
             </center>
             <h1>ConFlix</h1>
             <p>A ticket reseller.</p>
-            <Button block>
+            {/* <Button block>
               Sign Up
-            </Button>
+            </Button> */}
           </div>
         </Col>
       </Row>
