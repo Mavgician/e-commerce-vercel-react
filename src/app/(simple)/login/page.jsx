@@ -7,7 +7,7 @@ import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 
 import { faLongArrowLeft } from '@fortawesome/free-solid-svg-icons'
 
-import { useSignInWithGoogle, useSignInWithFacebook, useSignOut } from 'react-firebase-hooks/auth'
+import { useSignInWithGoogle, useSignInWithFacebook, useSignOut, useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth'
 import {
   Button,
   FormGroup,
@@ -22,12 +22,27 @@ import { auth, db } from '@/scripts/firebase'
 import { useRouter } from 'next/navigation';
 
 import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { useState } from 'react';
 
 export default function Page() {
   const [signInWithGoogle, user_Google, loading_Google, error_Google] = useSignInWithGoogle(auth)
-  const router = useRouter()
+  const [
+    signInWithEmailAndPassword,
+    user,
+    loading,
+    error,
+  ] = useSignInWithEmailAndPassword(auth);
 
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [invalid, setInvalid] = useState(false);
+
+  const router = useRouter()
   const social = { height: 50, aspectRatio: 1, borderRadius: '50%' }
+
+  function signUp() {
+    return router.push('/sign-up')
+  }
 
   async function googleLogin() {
     let user = await signInWithGoogle()
@@ -44,6 +59,13 @@ export default function Page() {
     return router.back()
   }
 
+  async function normalSignIn() {
+    let user = await signInWithEmailAndPassword(email, password)
+
+    if (user) return router.push('/')
+    setInvalid(true)
+  }
+
   return (
     <main className='p-0 position-relative'>
       <Row className='p-0 m-0 vh-100'>
@@ -51,15 +73,17 @@ export default function Page() {
           <div className='w-25'>
             <center>
               <h1 className='mb-4'>Sign In</h1>
-              <h3>Google</h3>
               <Button className='mx-1' style={social} outline={true} color='primary' onClick={googleLogin}>
                 <FontAwesomeIcon icon={faGoogle} />
               </Button>
-              {/* <p className='text-muted mt-3'>or use your account</p>
+              <p className='text-muted mt-3'>or use your account</p>
               <FormGroup floating>
                 <Input
                   placeholder='Email'
                   type='email'
+                  value={email}
+                  invalid={invalid}
+                  onChange={e => setEmail(e.target.value)}
                 />
                 <Label>
                   Email
@@ -69,17 +93,19 @@ export default function Page() {
                 <Input
                   placeholder='Password'
                   type='password'
+                  value={password}
+                  invalid={invalid}
+                  onChange={e => setPassword(e.target.value)}
                 />
                 <Label>
                   Password
                 </Label>
               </FormGroup>
-              <a href='#'>Forgot your password?</a>
               <div className='my-3'>
-                <Button block>
+                <Button block onClick={normalSignIn}>
                   Sign In
                 </Button>
-              </div> */}
+              </div>
             </center>
           </div>
         </Col>
@@ -90,9 +116,9 @@ export default function Page() {
             </center>
             <h1>ConFlix</h1>
             <p>A ticket reseller.</p>
-            {/* <Button block>
+            <Button block onClick={signUp}>
               Sign Up
-            </Button> */}
+            </Button>
           </div>
         </Col>
       </Row>
