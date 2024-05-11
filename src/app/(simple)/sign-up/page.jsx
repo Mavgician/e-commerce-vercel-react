@@ -57,11 +57,11 @@ export default function Page() {
     if (!emailRegex.test(email)) setErrorMsg_e('Invalid email.')
     if (email.length === 0) setErrorMsg_e('Please provide an email.')
     
-    if (!(errorMsg_e && errorMsg_p)) return console.log('inside last if                 ');
+    if (errorMsg_e || errorMsg_p) return 0
     
-    /* await createUserWithEmailAndPassword(email, password) */
+    await createUserWithEmailAndPassword(email, password)
   }
-
+  
   useEffect(() => {
     (
       async () => {
@@ -91,7 +91,7 @@ export default function Page() {
                   placeholder='Email'
                   type='email'
                   value={email}
-                  invalid={errorMsg_e}
+                  invalid={typeof errorMsg_e === 'string'}
                   onChange={e => setEmail(e.target.value)}
                 />
                 <Label>
@@ -104,7 +104,7 @@ export default function Page() {
                   placeholder='Password'
                   type='password'
                   value={password}
-                  invalid={errorMsg_p}
+                  invalid={typeof errorMsg_p === 'string'}
                   onChange={e => setPassword(e.target.value)}
                 />
                 <Label>
@@ -117,7 +117,7 @@ export default function Page() {
                   placeholder='Password'
                   type='password'
                   value={confirmPassword}
-                  invalid={errorMsg_p}
+                  invalid={typeof errorMsg_p === 'string'}
                   onChange={e => setConfirmPassword(e.target.value)}
                 />
                 <Label>
