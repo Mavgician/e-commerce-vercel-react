@@ -16,7 +16,8 @@ import {
   Input,
   Row,
   Col,
-  Container
+  Container,
+  FormFeedback
 } from 'reactstrap'
 
 import { auth, db } from '@/scripts/firebase'
@@ -37,18 +38,28 @@ export default function Page() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [invalid, setInvalid] = useState(false);
+
+  const [errorMsg_p, setErrorMsg_p] = useState(undefined);
+  const [errorMsg_e, setErrorMsg_e] = useState(undefined);
 
   const router = useRouter()
 
   async function submitHandler() {
-    if (password !== confirmPassword || password.length === 0 || password.length < 8) return setInvalid(true)
-    setInvalid(false)
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
 
-    console.log(email, password);
+    setErrorMsg_e(undefined)
+    setErrorMsg_p(undefined)
+    
+    if (password !== confirmPassword) setErrorMsg_p('Passwords do not match.')
+    if (password.length < 8) setErrorMsg_p(`Please use at least 8 characters (you are currently using ${password.length} characters).`)
+    if (password.length === 0) setErrorMsg_p('Please provide a password.')
 
-    let test = await createUserWithEmailAndPassword(email, password)
-    console.log(test);
+    if (!emailRegex.test(email)) setErrorMsg_e('Invalid email.')
+    if (email.length === 0) setErrorMsg_e('Please provide an email.')
+    
+    if (!(errorMsg_e && errorMsg_p)) return console.log('inside last if                 ');
+    
+    /* await createUserWithEmailAndPassword(email, password) */
   }
 
   useEffect(() => {
@@ -68,15 +79,11 @@ export default function Page() {
     )()
   }, [loading]);
 
-
   return (
     <main className='p-0 position-relative'>
       <Container className='vh-100 vw-100 d-flex justify-content-center align-items-center'>
         <div>
-          <Form onSubmit={e => {
-            e.preventDefault()
-            submitHandler()
-          }}>
+          <Form onKeyDown={event => { if (event.key === "Enter") submitHandler() }}>
             <center>
               <h1 className='mb-4'>Make an account with ConFlix</h1>
               <FormGroup floating>
@@ -84,30 +91,33 @@ export default function Page() {
                   placeholder='Email'
                   type='email'
                   value={email}
+                  invalid={errorMsg_e}
                   onChange={e => setEmail(e.target.value)}
                 />
                 <Label>
                   Email
                 </Label>
+                <FormFeedback>{errorMsg_e}</FormFeedback>
               </FormGroup>
               <FormGroup floating>
                 <Input
                   placeholder='Password'
                   type='password'
                   value={password}
-                  invalid={invalid}
+                  invalid={errorMsg_p}
                   onChange={e => setPassword(e.target.value)}
                 />
                 <Label>
                   Password
                 </Label>
+                <FormFeedback>{errorMsg_p}</FormFeedback>
               </FormGroup>
               <FormGroup floating>
                 <Input
                   placeholder='Password'
                   type='password'
                   value={confirmPassword}
-                  invalid={invalid}
+                  invalid={errorMsg_p}
                   onChange={e => setConfirmPassword(e.target.value)}
                 />
                 <Label>
