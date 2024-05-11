@@ -39,41 +39,42 @@ export default function Page() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const [errorMsg_p, setErrorMsg_p] = useState(undefined);
-  const [errorMsg_e, setErrorMsg_e] = useState(undefined);
+  const [errorMsg_p, setErrorMsg_p] = useState('');
+  const [errorMsg_e, setErrorMsg_e] = useState('');
 
   const router = useRouter()
 
   async function submitHandler() {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
 
-    setErrorMsg_e(undefined)
-    setErrorMsg_p(undefined)
-    
-    if (password !== confirmPassword) setErrorMsg_p('Passwords do not match.')
-    if (password.length < 8) setErrorMsg_p(`Please use at least 8 characters (you are currently using ${password.length} characters).`)
-    if (password.length === 0) setErrorMsg_p('Please provide a password.')
+    let e_e_message = ''
+    let e_p_message = ''
 
-    if (!emailRegex.test(email)) setErrorMsg_e('Invalid email.')
-    if (email.length === 0) setErrorMsg_e('Please provide an email.')
-    
-    if (errorMsg_e || errorMsg_p) return 0
-    
-    await createUserWithEmailAndPassword(email, password)
+    if (password !== confirmPassword) e_p_message = '* Passwords do not match.'
+    if (password.length < 8) e_p_message = `* Please use at least 8 characters (you are currently using ${password.length} characters).`
+    if (password.length === 0) e_p_message = '* Please provide a password.'
+
+    if (!emailRegex.test(email)) e_e_message = '* Invalid email.'
+    if (email.length === 0) e_e_message = '* Please provide an email.'
+
+    setErrorMsg_e(e_e_message)
+    setErrorMsg_p(e_p_message)
+
+    if (e_e_message.length || e_p_message.length) return null
+    else return await createUserWithEmailAndPassword(email, password)
   }
-  
+
   useEffect(() => {
     (
       async () => {
         if (user) {
-          console.log(user);
-          /* await setDoc(doc(db, 'user', user.user.uid), {
+          await setDoc(doc(db, 'user', user.user.uid), {
             d_name: user.user.displayName,
             email: user.user.email,
             account_type: 'user',
             account_image: user.user.photoURL
-          }) */
-          /* router.replace('/') */
+          })
+          router.replace('/account-setup')
         }
       }
     )()
@@ -84,54 +85,55 @@ export default function Page() {
       <Container className='vh-100 vw-100 d-flex justify-content-center align-items-center'>
         <div>
           <Form onKeyDown={event => { if (event.key === "Enter") submitHandler() }}>
-            <center>
-              <h1 className='mb-4'>Make an account with ConFlix</h1>
-              <FormGroup floating>
-                <Input
-                  placeholder='Email'
-                  type='email'
-                  value={email}
-                  invalid={typeof errorMsg_e === 'string'}
-                  onChange={e => setEmail(e.target.value)}
-                />
-                <Label>
-                  Email
-                </Label>
-                <FormFeedback>{errorMsg_e}</FormFeedback>
-              </FormGroup>
-              <FormGroup floating>
-                <Input
-                  placeholder='Password'
-                  type='password'
-                  value={password}
-                  invalid={typeof errorMsg_p === 'string'}
-                  onChange={e => setPassword(e.target.value)}
-                />
-                <Label>
-                  Password
-                </Label>
-                <FormFeedback>{errorMsg_p}</FormFeedback>
-              </FormGroup>
-              <FormGroup floating>
-                <Input
-                  placeholder='Password'
-                  type='password'
-                  value={confirmPassword}
-                  invalid={typeof errorMsg_p === 'string'}
-                  onChange={e => setConfirmPassword(e.target.value)}
-                />
-                <Label>
-                  Confirm Password
-                </Label>
-              </FormGroup>
-            </center>
-            <FormGroup>
+            <h1 className='mb-4'>Make an account with ConFlix</h1>
+            <FormGroup floating>
               <Input
-                type='checkbox'
+                placeholder='Email'
+                type='email'
+                value={email}
+                invalid={errorMsg_e.length > 0}
+                onChange={e => setEmail(e.target.value)}
               />
-              &nbsp;&nbsp;&nbsp;&nbsp;
               <Label>
+                Email
+              </Label>
+              <FormFeedback>{errorMsg_e}</FormFeedback>
+            </FormGroup>
+            <FormGroup floating>
+              <Input
+                placeholder='Password'
+                type='password'
+                value={password}
+                invalid={errorMsg_p.length > 0}
+                onChange={e => setPassword(e.target.value)}
+              />
+              <Label>
+                Password
+              </Label>
+              <FormFeedback>{errorMsg_p}</FormFeedback>
+            </FormGroup>
+            <FormGroup floating>
+              <Input
+                placeholder='Password'
+                type='password'
+                value={confirmPassword}
+                invalid={errorMsg_p.length > 0}
+                onChange={e => setConfirmPassword(e.target.value)}
+              />
+              <Label>
+                Confirm Password
+              </Label>
+            </FormGroup>
+
+            <FormGroup>
+              <Label>
+                <Input
+                  type='checkbox'
+                  invalid
+                />
+                &nbsp;&nbsp;&nbsp;&nbsp;
                 I agree with the terms and conditions
+                <FormFeedback>* Please agree to our terms and conditions before registering.</FormFeedback>
               </Label>
             </FormGroup>
             <div className='my-3'>
