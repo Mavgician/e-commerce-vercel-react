@@ -7,7 +7,7 @@ import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 
 import { faLongArrowLeft } from '@fortawesome/free-solid-svg-icons'
 
-import { useSignInWithGoogle, useSignInWithFacebook, useSignOut } from 'react-firebase-hooks/auth'
+import { useSignInWithGoogle, useSignInWithFacebook, useSignOut, useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth'
 import {
   Button,
   FormGroup,
@@ -22,12 +22,27 @@ import { auth, db } from '@/scripts/firebase'
 import { useRouter } from 'next/navigation';
 
 import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { useState } from 'react';
 
 export default function Page() {
-  const [ signInWithGoogle, user_Google, loading_Google, error_Google ] = useSignInWithGoogle(auth)
-  const router = useRouter()
+  const [signInWithGoogle, user_Google, loading_Google, error_Google] = useSignInWithGoogle(auth)
+  const [
+    signInWithEmailAndPassword,
+    user,
+    loading,
+    error,
+  ] = useSignInWithEmailAndPassword(auth);
 
-  const social = {height: 50,  aspectRatio: 1, borderRadius: '50%'}
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [invalid, setInvalid] = useState(false);
+
+  const router = useRouter()
+  const social = { height: 50, aspectRatio: 1, borderRadius: '50%' }
+
+  function signUp() {
+    return router.push('/sign-up')
+  }
 
   async function googleLogin() {
     let user = await signInWithGoogle()
@@ -42,6 +57,13 @@ export default function Page() {
     })
 
     return router.back()
+  }
+
+  async function normalSignIn() {
+    let user = await signInWithEmailAndPassword(email, password)
+
+    if (user) return router.push('/')
+    setInvalid(true)
   }
 
   return (
@@ -59,6 +81,9 @@ export default function Page() {
                 <Input
                   placeholder='Email'
                   type='email'
+                  value={email}
+                  invalid={invalid}
+                  onChange={e => setEmail(e.target.value)}
                 />
                 <Label>
                   Email
@@ -68,14 +93,16 @@ export default function Page() {
                 <Input
                   placeholder='Password'
                   type='password'
+                  value={password}
+                  invalid={invalid}
+                  onChange={e => setPassword(e.target.value)}
                 />
                 <Label>
                   Password
                 </Label>
               </FormGroup>
-              <a href='#'>Forgot your password?</a>
               <div className='my-3'>
-                <Button block>
+                <Button block onClick={normalSignIn}>
                   Sign In
                 </Button>
               </div>
@@ -89,7 +116,7 @@ export default function Page() {
             </center>
             <h1>ConFlix</h1>
             <p>A ticket reseller.</p>
-            <Button block>
+            <Button block onClick={signUp}>
               Sign Up
             </Button>
           </div>
