@@ -22,7 +22,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-firebase-hooks": "^5.1.1",
-    "reactstrap": "^9.2.2"
+    "reactstrap": "^9.2.2",
+    "use-file-picker": "^2.1.2"
   },
   "devDependencies": {
     "eslint": "^8",
