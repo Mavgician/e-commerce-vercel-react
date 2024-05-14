@@ -18,6 +18,9 @@ import {
   setDoc,
   addDoc,
   Timestamp,
+  serverTimestamp,
+  FieldPath,
+  documentId,
 } from 'firebase/firestore';
 
 import { getStorage, ref, uploadString, getDownloadURL } from "firebase/storage";
@@ -255,6 +258,7 @@ function SetTicketModal({ isOpen, toggle, update = false, setUpdate = (e) => { }
         location: location,
         date: Timestamp.fromDate(new Date(date))
       },
+      created_at: serverTimestamp(),
       seat: seatDetails
     }
 
@@ -490,6 +494,8 @@ export function TicketAdmin() {
 
   const [refreshState, setRefreshState] = useState(false);
 
+  const [sortBy, setSortBy] = useState(queryRef);
+
   function setDocStates(snapshot) {
     if (snapshot.docs.length === 0) return;
     setDocs(snapshot.docs);
@@ -497,14 +503,37 @@ export function TicketAdmin() {
     setFirstSeenDoc(snapshot.docs[0]);
   }
 
+  function sortbyHandler(index) {
+    let parse = parseInt(index)
+
+    switch (parse) {
+      case 0:
+        setSortBy(queryRef)
+        break;
+
+      case 1:
+        setSortBy(query(collectionRef, orderBy(documentId()), limit(doc_limit)))
+        break
+
+      case 2:
+        setSortBy(query(collectionRef, orderBy(new FieldPath('details', 'date')), limit(doc_limit)))
+        break;
+
+      default:
+        setSortBy(queryRef)
+        break;
+    }
+
+  }
+
   async function getNextPage() {
-    const snapshot = await getDocs(query(queryRef, startAfter(lastSeenDoc)));
+    const snapshot = await getDocs(query(sortBy, startAfter(lastSeenDoc)));
     setDocStates(snapshot);
   }
 
   async function getPreviousPage() {
     const snapshot = await getDocs(
-      query(queryRef, endBefore(firstSeenDoc), limitToLast(doc_limit))
+      query(sortBy, endBefore(firstSeenDoc), limitToLast(doc_limit))
     );
     setDocStates(snapshot);
   }
@@ -512,8 +541,10 @@ export function TicketAdmin() {
   // Set states on page load
   useEffect(() => {
     (async () => {
-      const snapshot = await getDocs(queryRef);
+      const snapshot = await getDocs(sortBy);
       const count = await getCountFromServer(collectionRef);
+
+      console.log(snapshot.docs);
 
       snapshot.docs.forEach((doc, idx) => {
         if (idx == snapshot.docs.length - 1) setLastSeenDoc(doc);
@@ -523,7 +554,7 @@ export function TicketAdmin() {
       setTicketCount(count.data().count);
       setDocs(snapshot.docs);
     })();
-  }, [refreshState]);
+  }, [refreshState, sortBy]);
 
   return (
     <>
@@ -535,7 +566,19 @@ export function TicketAdmin() {
           <Button size='sm' className='mx-1' outline onClick={() => setSetTicketModal(true)}>
             <FontAwesomeIcon icon={faAdd} />
           </Button>
-          <small className='text-muted me-1 ms-auto'>
+          <div className='d-flex align-items-center gap-2 ms-auto'>
+            <p className="m-0 w-100">Sort by</p>
+            <Input
+              placeholder='Genre'
+              type='select'
+              onChange={(e) => { sortbyHandler(e.target.value) }}
+            >
+              <option value={0}>title</option>
+              <option value={1}>id</option>
+              <option value={2}>date</option>
+            </Input>
+          </div>
+          <small className='text-muted me-1 ms-3'>
             Showing {ticketCount} of {doc_limit}
           </small>
           <Button color='transparent' size='sm' onClick={getPreviousPage}>

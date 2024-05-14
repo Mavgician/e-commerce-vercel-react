@@ -21,7 +21,7 @@ import { auth, db } from '@/scripts/firebase'
 
 import { useRouter } from 'next/navigation';
 
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { useState } from 'react';
 
 export default function Page() {
@@ -54,7 +54,8 @@ export default function Page() {
       email: user.user.email,
       account_type: 'user',
       account_image: user.user.photoURL,
-      orders: []
+      orders: [],
+      created_at: serverTimestamp()
     })
 
     return router.push(`/account-setup/${user.user.uid}`)
