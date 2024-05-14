@@ -17,7 +17,6 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "bootstrap": "^5.3.3",
     "firebase": "^10.8.1",
-    "mdb-react-ui-kit": "^8.0.0",
     "next": "14.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

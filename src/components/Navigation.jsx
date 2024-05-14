@@ -48,9 +48,9 @@ export function Navigationbar({ transparent = false, isFixed = true }) {
             <NavItem>
               <NavLink href='/tickets'>Tickets</NavLink>
             </NavItem>
-            {/* <NavItem>
+            <NavItem>
               <NavLink href='/about-us'>About Us</NavLink>
-            </NavItem> */}
+            </NavItem>
           </Nav>
           <Nav className='ms-auto' navbar>
             <NavItem>
