@@ -110,12 +110,13 @@ export default function Page({ params }) {
                 <p className='m-0'>Name: {value?.first_name} {value?.last_name}</p>
                 <p className='m-0'>Username: {value?.d_name}</p>
               </b>
-              <div className="d-flex align-items-center gap-3">
-                <p>Email: {value?.email}</p>
-                <p>Phone: 0912345678</p>
-                <p>Account type: {value?.account_type}</p>
+              <div className="d-flex align-items-center gap-3 mt-2">
+                <p className='m-0'>Email: {value?.email}</p>
+                <p className='m-0'>Phone: 0912345678</p>
+                <p className='m-0'>Account type: {value?.account_type}</p>
               </div>
-            </div>
+              <p className="m-0">Account created at: {value?.created_at.toDate().toLocaleDateString()}</p>
+            </div> 
             <div className={tab === 1 ? '' : 'd-none'}>
               <h4>Your Reservations ({value.orders.length})</h4>
               {value.orders.length > 0 ? value.orders.map(order => <Order key={order.id} orderReference={order} />) : <h3 className='text-secondary'>No orders to see here</h3>}
