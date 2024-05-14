@@ -99,7 +99,7 @@ export default function Page({ params }) {
             <div className='my-3'>
               <Button active={tab === 0} onClick={e => setTab(0)} className='text-start text-secondary' block color='light'>ACCOUNT</Button>
               <Button active={tab === 1} onClick={e => setTab(1)} className='text-start mt-2 text-secondary' block color='light'>TICKET RESERVATIONS</Button>
-              {value.account_type === 'admin' && <Button active={tab === 2} onClick={e => setTab(2)} className='text-start mt-2' block color='danger'>ADMIN</Button>}
+              {value.account_type === 'admin' && <Button active={tab === 2} onClick={e => setTab(2)} className='text-start mt-2 text-secondary' block color='light'>ADMIN PANEL</Button>}
               <Button className='mt-4' block color='primary' onClick={logout}>Logout</Button>
             </div>
           </Col>
