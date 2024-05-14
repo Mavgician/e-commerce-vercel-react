@@ -1,30 +1,129 @@
 'use client'
 
-function Page() {
+import Image from 'next/image';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faGoogle } from '@fortawesome/free-brands-svg-icons'
+
+import { faLongArrowLeft } from '@fortawesome/free-solid-svg-icons'
+
+import { useSignInWithGoogle, useSignInWithFacebook, useSignOut, useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth'
+import {
+  Button,
+  FormGroup,
+  Label,
+  Input,
+  Row,
+  Col,
+} from 'reactstrap'
+
+import { auth, db } from '@/scripts/firebase'
+
+import { useRouter } from 'next/navigation';
+
+import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
+import { useState } from 'react';
+
+export default function Page() {
+  const [signInWithGoogle, user_Google, loading_Google, error_Google] = useSignInWithGoogle(auth)
+  const [
+    signInWithEmailAndPassword,
+    user,
+    loading,
+    error,
+  ] = useSignInWithEmailAndPassword(auth);
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [invalid, setInvalid] = useState(false);
+
+  const router = useRouter()
+  const social = { height: 50, aspectRatio: 1, borderRadius: '50%' }
+
+  function signUp() {
+    return router.push('/sign-up')
+  }
+
+  async function googleLogin() {
+    let user = await signInWithGoogle()
+
+    if ((await getDoc(doc(db, 'user', user.user.uid))).exists()) return router.back()
+
+    await setDoc(doc(db, 'user', user.user.uid), {
+      d_name: user.user.displayName,
+      email: user.user.email,
+      account_type: 'user',
+      account_image: user.user.photoURL,
+      orders: [],
+      created_at: serverTimestamp()
+    })
+
+    return router.push(`/account-setup/${user.user.uid}`)
+  }
+
+  async function normalSignIn() {
+    let user = await signInWithEmailAndPassword(email, password)
+
+    if (user) return router.push('/')
+    setInvalid(true)
+  }
+
   return (
-    <main>
-      {
-      /*
-        Lagay niyo dito pinaka layout ng home page for the store. Naka integrate ung bootstrap dito so all goods tayo dun.
-        Ang hindi lang nakaintegrate sa root component is ung javascript ng bootstrap. So kung mag ca1ousel or something,
-        sabihan niyo ko, kasi medj mahirap iexplain kung paano i allow un - 
-
-        Small explanation:
-          Next.js is mostly server-side rendered, ang pag import ng javascript is not "server" friendly. Need nating i-convert
-          yung component into a client component para maimport ung javascript. This is actually better para forced tayo gumawa
-          ng components for various things on a page. Slideshow component na lalagyan lang ng picture array etc. etc.
-        
-        Watch niyo rin ung sinend ko sa GC natin para mafamiliarize kayo sa framework. I suggest video number 3 para magets niyo
-        ung routing ng pages. Kung paano siya nahahandle ng server ni next.js.
-
-        PAMPADALI TO NG BUHAY NATIN OKAY >:(
-
-        -Mavs ang leader ng bayan
-      */
-      }
-      <h1>You have reached the template page!</h1>
+    <main className='p-0 position-relative bg-white'>
+      <Row className='p-0 m-0 vh-100'>
+        <Col md={6} sm={12} className='d-flex justify-content-center align-items-center'>
+          <div className='w-25'>
+            <center className='text-dark'>
+              <h1 className='mb-4'>Sign In</h1>
+              <Button className='mx-1' style={social} outline={true} color='primary' onClick={googleLogin}>
+                <FontAwesomeIcon icon={faGoogle} />
+              </Button>
+              <p className='text-muted mt-3'>or use your account</p>
+              <FormGroup floating>
+                <Input
+                  placeholder='Email'
+                  type='email'
+                  value={email}
+                  invalid={invalid}
+                  onChange={e => setEmail(e.target.value)}
+                />
+                <Label>
+                  Email
+                </Label>
+              </FormGroup>
+              <FormGroup floating>
+                <Input
+                  placeholder='Password'
+                  type='password'
+                  value={password}
+                  invalid={invalid}
+                  onChange={e => setPassword(e.target.value)}
+                />
+                <Label>
+                  Password
+                </Label>
+              </FormGroup>
+              <div className='my-3'>
+                <Button block onClick={normalSignIn}>
+                  Sign In
+                </Button>
+              </div>
+            </center>
+          </div>
+        </Col>
+        <Col md={6} sm={12} className='bg-black d-flex justify-content-center align-items-center text-white'>
+          <div>
+            <center className='my-4'>
+              {/* <img src={logo.src} className='my-2 w-50' /> */}
+            </center>
+            <h1>ConFlix</h1>
+            <p>A ticket reseller.</p>
+            <Button block onClick={signUp}>
+              Sign Up
+            </Button>
+          </div>
+        </Col>
+      </Row>
     </main>
   )
 }
-
-export default Page

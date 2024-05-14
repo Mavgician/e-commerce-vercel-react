@@ -1,28 +1,63 @@
 'use client'
 
+import { Loader } from "@/components/Loader";
+import { TicketItem, TicketLayout } from "@/components/Tickets";
+import { db } from "@/scripts/firebase";
+import { collection } from "firebase/firestore";
+
+import { useEffect, useState } from "react";
+import { useCollectionDataOnce } from "react-firebase-hooks/firestore";
+
+import {
+  Container,
+  Row,
+  Col
+} from "reactstrap";
+
+import Image from "next/image";
+import Link from "next/link";
+
+/* export const metadata = {
+  title: 'ConFlix - Tickets',
+  description: 'Ticket reseller for concerts',
+}; */
+
 function Page() {
+  const [values, loading, error, snapshot] = useCollectionDataOnce(collection(db, 'tickets'));
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    if (!loading) {
+      let oldData = [...values]
+
+      for (let i = 0; i < oldData.length; i++) {
+        oldData[i].id = snapshot?.docs[i].id
+      }
+
+      setData(oldData)
+    }
+  }, [loading]);
+
+  if (loading) return <Loader />
+
   return (
     <main>
-      {
-      /*
-        Lagay niyo dito pinaka layout ng home page for the store. Naka integrate ung bootstrap dito so all goods tayo dun.
-        Ang hindi lang nakaintegrate sa root component is ung javascript ng bootstrap. So kung mag ca1ousel or something,
-        sabihan niyo ko, kasi medj mahirap iexplain kung paano i allow un - 
-
-        Small explanation:
-          Next.js is mostly server-side rendered, ang pag import ng javascript is not "server" friendly. Need nating i-convert
-          yung component into a client component para maimport ung javascript. This is actually better para forced tayo gumawa
-          ng components for various things on a page. Slideshow component na lalagyan lang ng picture array etc. etc.
-        
-        Watch niyo rin ung sinend ko sa GC natin para mafamiliarize kayo sa framework. I suggest video number 3 para magets niyo
-        ung routing ng pages. Kung paano siya nahahandle ng server ni next.js.
-
-        PAMPADALI TO NG BUHAY NATIN OKAY >:(
-
-        -Mavs ang leader ng bayan
-      */
-      }
-      <h1>You have reached the template page!</h1>
+      <Container className="d-flex align-items-center justify-content-center" style={{ height: '75vh' }}>
+        <Row>
+          <Col className="d-flex align-items-center justify-content-end">
+            <Image src={values[0]?.poster_image_url} alt='' height={0} width={0} sizes="100%" style={{ height: 'auto', width: '100%' }} />
+          </Col>
+          <Col className="text-white">
+            <h4 className='m-0'>{values[0]?.title}</h4>
+            <h1 className='m-0'>{values[0]?.details?.artist}</h1>
+            <p className='m-0 mb-4'>{values[0]?.details?.location}</p>
+            <Link href={`/tickets/${values[0].id}`} className='btn btn-outline-danger'>BUY TICKETS NOW!</Link>
+          </Col>
+        </Row>
+      </Container>
+      <TicketLayout sectionKey={'hot'}>
+        {data.flatMap((item, idx) => <TicketItem key={`ticket-${item.ticketid}`} concert_data={item} />)}
+      </TicketLayout>
     </main>
   )
 }
