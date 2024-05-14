@@ -21,7 +21,7 @@ import { auth, db } from '@/scripts/firebase'
 
 import { useRouter } from 'next/navigation';
 
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { useState } from 'react';
 
 export default function Page() {
@@ -53,10 +53,12 @@ export default function Page() {
       d_name: user.user.displayName,
       email: user.user.email,
       account_type: 'user',
-      account_image: user.user.photoURL
+      account_image: user.user.photoURL,
+      orders: [],
+      created_at: serverTimestamp()
     })
 
-    return router.back()
+    return router.push(`/account-setup/${user.user.uid}`)
   }
 
   async function normalSignIn() {
@@ -67,11 +69,11 @@ export default function Page() {
   }
 
   return (
-    <main className='p-0 position-relative'>
+    <main className='p-0 position-relative bg-white'>
       <Row className='p-0 m-0 vh-100'>
         <Col md={6} sm={12} className='d-flex justify-content-center align-items-center'>
           <div className='w-25'>
-            <center>
+            <center className='text-dark'>
               <h1 className='mb-4'>Sign In</h1>
               <Button className='mx-1' style={social} outline={true} color='primary' onClick={googleLogin}>
                 <FontAwesomeIcon icon={faGoogle} />

@@ -47,7 +47,7 @@ function Page() {
           <Col className="d-flex align-items-center justify-content-end">
             <Image src={values[0]?.poster_image_url} alt='' height={0} width={0} sizes="100%" style={{ height: 'auto', width: '100%' }} />
           </Col>
-          <Col className="text-dark">
+          <Col className="text-white">
             <h4 className='m-0'>{values[0]?.title}</h4>
             <h1 className='m-0'>{values[0]?.details?.artist}</h1>
             <p className='m-0 mb-4'>{values[0]?.details?.location}</p>

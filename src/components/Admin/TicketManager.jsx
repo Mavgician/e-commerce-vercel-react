@@ -15,10 +15,15 @@ import {
   limitToLast,
   deleteDoc,
   doc,
-  serverTimestamp,
   setDoc,
   addDoc,
+  Timestamp,
+  serverTimestamp,
+  FieldPath,
+  documentId,
 } from 'firebase/firestore';
+
+import { getStorage, ref, uploadString, getDownloadURL } from "firebase/storage";
 
 import {
   Card,
@@ -47,9 +52,21 @@ import {
   faArrowUp,
 } from '@fortawesome/free-solid-svg-icons';
 
+import {
+  SeatRenderer,
+  intToLetter
+} from '@/components/Tickets'
+
 import Link from 'next/link';
 import { ModalFrame } from '@/components/SimpleModal';
-import { useRouter } from 'next/navigation';
+import { useFilePicker } from 'use-file-picker';
+
+import {
+  FileAmountLimitValidator,
+  FileTypeValidator,
+  FileSizeValidator,
+  ImageDimensionsValidator
+} from 'use-file-picker/validators'
 
 // Set viewable document limit
 const doc_limit = 5;
@@ -58,71 +75,18 @@ const doc_limit = 5;
 const collectionRef = collection(db, 'tickets');
 const queryRef = query(collectionRef, orderBy('title'), limit(doc_limit));
 
-const intToLetter = (index) => {
-  let letter = '';
-  let repeat = Math.floor(Math.log(index) / Math.log(26));
-
-  if (repeat > 1) {
-    letter += intToLetter(index / 26);
-  }
-
-  letter += String.fromCharCode((index % 26) + 'A'.charCodeAt(0));
-
-  return letter;
-};
-
-const SeatType = ({ setter, allseats, index }) => {
-  const [price, setPrice] = useState(0);
-  const [type, setType] = useState('Type');
-  const [seatsTable, setSeatsTable] = useState({ column: 1, row: 1 });
+function SeatType({ setter, allseats, index }) {
+  const [price, setPrice] = useState(allseats[index]?.price ? allseats[index].price : 0);
+  const [type, setType] = useState(allseats[index]?.type ? allseats[index].type : '');
+  const [seatsTable, setSeatsTable] = useState(allseats[index]?.seats_dimension ? allseats[index].seats_dimension : { column: 1, row: 1 });
 
   const [viewable, isViewable] = useState(true);
 
-  let temp = [];
-
-  const SeatRenderer = ({ table }) => {
-    let final_table = [];
-
-    for (let i = 0; i < table.column; i++) {
-      let column = [];
-      for (let x = 0; x < table.row; x++) {
-        column.push(
-          <div
-            className='m-1 border d-flex align-items-center justify-content-center'
-            style={{ height: 40, width: 40, flexShrink: 0 }}
-            key={`${intToLetter(i)}${x + 1}`}
-          >
-            {`${intToLetter(i)}${x + 1}`}
-          </div>
-        );
-      }
-
-      final_table.push(
-        <div className='d-flex' key={`column-${intToLetter(i)}`}>
-          {column}
-          <div
-            className='m-1'
-            style={{ height: 40, width: 45, flexShrink: 0 }}
-          ></div>
-        </div>
-      );
-    }
-
-    return (
-      <div className={'pb-5'} style={{ height: 120, overflow: 'auto' }}>
-        {final_table}
-      </div>
-    );
-  };
-
   const updateSeatIndex = (e, type = '') => {
+    let temp = [];
     let seats = allseats
     let formData = e.target.value
-    let data = { availability: true }
-    let tempSize = {}
-
-    //TODO: This part is bugged. I don't know how to fix it or how the bug works.
-    //Bug Description: tempSize of seats table is misaligned with expected output
+    let data = { available: true }
 
     switch (type) {
       case 'price':
@@ -131,27 +95,22 @@ const SeatType = ({ setter, allseats, index }) => {
       case 'type':
         data.type = formData
         break
-      case 'column':
-        tempSize = { ...seatsTable, column: parseInt(formData) }
-      case 'row':
-        tempSize = { ...seatsTable, row: parseInt(formData) }
-
-        for (let i = 0; i < tempSize.column; i++) {
-          for (let x = 0; x < tempSize.row; x++) {
+      case 'table':
+        for (let i = 0; i < formData.column; i++) {
+          for (let x = 0; x < formData.row; x++) {
             temp.push(`${intToLetter(i)}${x + 1}`);
           }
         }
-
-        data.seats = temp
-        break
-
+        data.seats_dimension = formData
+        break;
       default:
         break
     }
 
+    data.seats = temp
     seats[index] = { ...allseats[index], ...data }
-    setter(seats);
-  };
+    setter(seats)
+  }
 
   return (
     <Container>
@@ -229,13 +188,13 @@ const SeatType = ({ setter, allseats, index }) => {
         <Col s={12} md={6}>
           <FormGroup>
             <Label>Seats View</Label>
-            <SeatRenderer table={seatsTable} />
+            <SeatRenderer table={seatsTable} callBack={(dim) => { updateSeatIndex({ target: { value: dim } }, 'table') }} />
           </FormGroup>
         </Col>
       </Row>
     </Container>
-  );
-};
+  )
+}
 
 function ConfirmationModal({ submit, isOpen, toggle, children }) {
   return (
@@ -248,31 +207,58 @@ function ConfirmationModal({ submit, isOpen, toggle, children }) {
   );
 }
 
-function SetTicketModal({ isOpen, toggle, update, setUpdate }) {
+function SetTicketModal({ isOpen, toggle, update = false, setUpdate = (e) => { }, data, id }) {
+  const jsdate = data?.details?.date.toDate()
+  const calendardate = `${jsdate?.getFullYear()}-${("0" + (jsdate?.getMonth() + 1)).slice(-2)}-${("0" + jsdate?.getDate()).slice(-2)}T${("0" + (jsdate?.getHours())).slice(-2)}:${("0" + (jsdate?.getMinutes())).slice(-2)}`
+
   // State for input forms
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState(data?.title ? data.title : '');
+  const [description, setDescription] = useState(data?.description ? data.description : '');
 
-  const [seatDetails, setSeatDetails] = useState([{seats: [], available: false}]);
+  const [seatDetails, setSeatDetails] = useState(data?.seat ? data.seat : [{ seats: [], available: false }]);
 
-  const [artist, setArtist] = useState('');
-  const [genre, setGenre] = useState('');
-  const [location, setLocation] = useState('');
-  const [date, setDate] = useState('');
+  const [artist, setArtist] = useState(data?.details?.artist ? data.details.artist : '');
+  const [genre, setGenre] = useState(data?.details?.genre ? data.details.genre : '');
+  const [location, setLocation] = useState(data?.details?.location ? data.details.location : '');
+  const [date, setDate] = useState(data?.details?.date ? calendardate : '');
 
-  const [imageurl, setImageurl] = useState('https://ticketnetonline.s3.ap-southeast-1.amazonaws.com/files/events/poster/DebbiGibsonEventPoster.jpg');
+  const { openFilePicker, filesContent, loading, errors } = useFilePicker({
+    readAs: 'DataURL',
+    accept: 'image/*',
+    multiple: false,
+    validators: [
+      new FileAmountLimitValidator({ max: 1 }),
+      new FileTypeValidator(['jpg', 'png']),
+      new FileSizeValidator({ maxFileSize: 50 * 1024 * 1024 /* 50 MB */ }),
+      new ImageDimensionsValidator({
+        maxHeight: 4000, // in pixels
+        maxWidth: 4000,
+        minHeight: 0,
+        minWidth: 8,
+      }),
+    ],
+  });
 
-  const submitHandler = async (id) => {
+  const submitHandler = async () => {
+    let upload_url = 'https://ticketnetonline.s3.ap-southeast-1.amazonaws.com/files/events/poster/DebbiGibsonEventPoster.jpg'
+
+    if (filesContent.length > 0) {
+      const upload_snapshot = await uploadString(ref(getStorage(), filesContent[0].name), filesContent[0].content, 'data_url')
+      const upload_ref = upload_snapshot.ref
+      upload_url = await getDownloadURL(upload_ref)
+    }
+
     const payload = {
       title: title,
       description: description,
-      poster_image_url: imageurl,
+      poster_image_url: upload_url,
       details: {
         artist: artist,
         genre: genre,
         location: location,
-        date: serverTimestamp()
+        date: Timestamp.fromDate(new Date(date))
       },
+      created_at: serverTimestamp(),
       seat: seatDetails
     }
 
@@ -292,7 +278,7 @@ function SetTicketModal({ isOpen, toggle, update, setUpdate }) {
   };
 
   return (
-    <ModalFrame toggle={toggle} isOpen={isOpen} submit={submitHandler} size='xl'>
+    <ModalFrame toggle={toggle} isOpen={isOpen} submit={() => { submitHandler() }} size='xl'>
       <div className='text-muted mb-3'>
         <b>
           <p>
@@ -328,6 +314,10 @@ function SetTicketModal({ isOpen, toggle, update, setUpdate }) {
                   />
                 </Col>
               </FormGroup>
+              <div className="d-flex align-items-center gap-3 mb-3">
+                <Button color='primary' size='sm' onClick={openFilePicker}>Upload Poster Image <FontAwesomeIcon icon={faAdd} /></Button>
+                <p className='m-0'>{filesContent[0]?.name}</p>
+              </div>
             </Col>
             <Col s={12} md={6}>
               <Row>
@@ -396,23 +386,22 @@ function SetTicketModal({ isOpen, toggle, update, setUpdate }) {
               <FontAwesomeIcon icon={faAdd} />
             </Button>
           </div>
-          {seatDetails.map((item, idx) => (
-            <SeatType key={`stype-${idx}`} setter={setSeatDetails} allseats={seatDetails} index={idx} />
-          ))}
+          {seatDetails.map((item, idx) => <SeatType key={`stype-${idx}`} setter={setSeatDetails} allseats={seatDetails} index={idx} />)}
         </Form>
       </div>
     </ModalFrame>
-  );
+  )
 }
 
 function TableTicketRow({ data, id, update, updateState }) {
   // Function for each entry in tickets table from firebase
   const [confirmModal, setConfirmModal] = useState(false);
+  const [editModal, setEditModal] = useState(false);
 
   function SeatType({ seat_data }) {
     return (
       <>
-        <div>
+        <div className='mb-3'>
           <p className='m-0'>
             <span className='fw-bold'>Seat type:</span> {seat_data.type}
           </p>
@@ -447,7 +436,7 @@ function TableTicketRow({ data, id, update, updateState }) {
         <td>
           <span className='text-muted'>{data.title}</span>
         </td>
-        <td className='text-muted'>{data.description}</td>
+        <td className='text-muted'><p className='m-0' style={{ width: 200, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{data.description}</p></td>
         <td className='text-muted'>
           <div>
             <span className='fw-bold'>Artist: </span>
@@ -463,7 +452,11 @@ function TableTicketRow({ data, id, update, updateState }) {
           </div>
           <div>
             <span className='fw-bold'>Date: </span>
-            {/* data.details.date.toDate().toString() */}
+            {data.details.date.toDate().toLocaleDateString('ko-KR')}
+          </div>
+          <div>
+            <span className='fw-bold'>Time: </span>
+            {`${data.details.date.toDate().toLocaleTimeString('en-us', { hour: "2-digit", minute: "2-digit", timeZoneName: 'short' })}`}
           </div>
         </td>
         <td className='text-muted'>
@@ -476,17 +469,21 @@ function TableTicketRow({ data, id, update, updateState }) {
           <Link href={data.poster_image_url}>link</Link>
         </td>
         <td>
+          <Button className='me-2' outline color='info' onClick={() => { setEditModal(true) }}>
+            <FontAwesomeIcon icon={faEdit} />
+          </Button>
           <Button className='me-2' outline color='danger' onClick={() => { setConfirmModal(true) }}>
             <FontAwesomeIcon icon={faTrash} />
           </Button>
         </td>
       </tr>
       <ConfirmationModal toggle={setConfirmModal} isOpen={confirmModal} submit={deleteTicket}>You want to delete {id}?</ConfirmationModal>
+      <SetTicketModal isOpen={editModal} setUpdate={update} update={updateState} toggle={setEditModal} data={data} id={id} />
     </>
   );
 }
 
-function Page() {
+export function TicketAdmin() {
   const [docs, setDocs] = useState([]);
   const [ticketCount, setTicketCount] = useState(0);
 
@@ -497,6 +494,8 @@ function Page() {
 
   const [refreshState, setRefreshState] = useState(false);
 
+  const [sortBy, setSortBy] = useState(queryRef);
+
   function setDocStates(snapshot) {
     if (snapshot.docs.length === 0) return;
     setDocs(snapshot.docs);
@@ -504,14 +503,37 @@ function Page() {
     setFirstSeenDoc(snapshot.docs[0]);
   }
 
+  function sortbyHandler(index) {
+    let parse = parseInt(index)
+
+    switch (parse) {
+      case 0:
+        setSortBy(queryRef)
+        break;
+
+      case 1:
+        setSortBy(query(collectionRef, orderBy(documentId()), limit(doc_limit)))
+        break
+
+      case 2:
+        setSortBy(query(collectionRef, orderBy(new FieldPath('details', 'date')), limit(doc_limit)))
+        break;
+
+      default:
+        setSortBy(queryRef)
+        break;
+    }
+
+  }
+
   async function getNextPage() {
-    const snapshot = await getDocs(query(queryRef, startAfter(lastSeenDoc)));
+    const snapshot = await getDocs(query(sortBy, startAfter(lastSeenDoc)));
     setDocStates(snapshot);
   }
 
   async function getPreviousPage() {
     const snapshot = await getDocs(
-      query(queryRef, endBefore(firstSeenDoc), limitToLast(doc_limit))
+      query(sortBy, endBefore(firstSeenDoc), limitToLast(doc_limit))
     );
     setDocStates(snapshot);
   }
@@ -519,8 +541,10 @@ function Page() {
   // Set states on page load
   useEffect(() => {
     (async () => {
-      const snapshot = await getDocs(queryRef);
+      const snapshot = await getDocs(sortBy);
       const count = await getCountFromServer(collectionRef);
+
+      console.log(snapshot.docs);
 
       snapshot.docs.forEach((doc, idx) => {
         if (idx == snapshot.docs.length - 1) setLastSeenDoc(doc);
@@ -530,62 +554,70 @@ function Page() {
       setTicketCount(count.data().count);
       setDocs(snapshot.docs);
     })();
-  }, [refreshState]);
+  }, [refreshState, sortBy]);
 
   return (
-    <main>
-      <Container className='p-5'>
-        <Card>
-          <CardHeader className='d-flex align-items-center'>
-            <CardTitle className='m-0 me-1'>
-              <h5 className='m-0'>Add tickets to database</h5>
-            </CardTitle>
-            <Button size='sm' className='mx-1' outline onClick={() => setSetTicketModal(true)}>
-              <FontAwesomeIcon icon={faAdd} />
-            </Button>
-            <small className='text-muted me-1 ms-auto'>
-              Showing {doc_limit} of {ticketCount}
-            </small>
-            <Button color='transparent' size='sm' onClick={getPreviousPage}>
-              <FontAwesomeIcon icon={faArrowLeft} />
-            </Button>
-            <Button color='transparent' size='sm' onClick={getNextPage}>
-              <FontAwesomeIcon icon={faArrowRight} />
-            </Button>
-          </CardHeader>
-          <CardBody>
-            <div className='table-responsive'>
-              <Table hover responsive>
-                <thead>
-                  <tr>
-                    <th className='col-2'>ID</th>
-                    <th className='col-1'>Title</th>
-                    <th className='col-2'>Description</th>
-                    <th className='col-2'>Details</th>
-                    <th className='col-2'>Seat Details</th>
-                    <th className='col-1'>Image/s</th>
-                    <th className='col-2'>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {docs.map((doc) => (
-                    <TableTicketRow
-                      data={doc.data()}
-                      id={doc.id}
-                      key={doc.id}
-                      update={setRefreshState}
-                      updateState={refreshState}
-                    />
-                  ))}
-                </tbody>
-              </Table>
-            </div>
-          </CardBody>
-        </Card>
-        <SetTicketModal toggle={setSetTicketModal} isOpen={setTicketModal} update={refreshState} setUpdate={setRefreshState}/>
-      </Container>
-    </main>
+    <>
+      <Card>
+        <CardHeader className='d-flex align-items-center'>
+          <CardTitle className='m-0 me-1'>
+            <h5 className='m-0'>Tickets Database</h5>
+          </CardTitle>
+          <Button size='sm' className='mx-1' outline onClick={() => setSetTicketModal(true)}>
+            <FontAwesomeIcon icon={faAdd} />
+          </Button>
+          <div className='d-flex align-items-center gap-2 ms-auto'>
+            <p className="m-0 w-100">Sort by</p>
+            <Input
+              placeholder='Genre'
+              type='select'
+              onChange={(e) => { sortbyHandler(e.target.value) }}
+            >
+              <option value={0}>Title</option>
+              <option value={1}>ID</option>
+              <option value={2}>Date</option>
+            </Input>
+          </div>
+          <small className='text-muted me-1 ms-3'>
+            Showing {ticketCount} of {ticketCount < doc_limit ? ticketCount : doc_limit}
+          </small>
+          <Button color='transparent' size='sm' onClick={getPreviousPage}>
+            <FontAwesomeIcon icon={faArrowLeft} />
+          </Button>
+          <Button color='transparent' size='sm' onClick={getNextPage}>
+            <FontAwesomeIcon icon={faArrowRight} />
+          </Button>
+        </CardHeader>
+        <CardBody>
+          <div className='table-responsive'>
+            <Table hover responsive>
+              <thead>
+                <tr>
+                  <th className='col-2'>ID</th>
+                  <th className='col-1'>Title</th>
+                  <th className='col-2'>Description</th>
+                  <th className='col-2'>Details</th>
+                  <th className='col-2'>Seat Details</th>
+                  <th className='col-1'>Image/s</th>
+                  <th className='col-2'>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {docs.map((doc) => (
+                  <TableTicketRow
+                    data={doc.data()}
+                    id={doc.id}
+                    key={doc.id}
+                    update={setRefreshState}
+                    updateState={refreshState}
+                  />
+                ))}
+              </tbody>
+            </Table>
+          </div>
+        </CardBody>
+      </Card>
+      <SetTicketModal toggle={setSetTicketModal} isOpen={setTicketModal} update={refreshState} setUpdate={setRefreshState} />
+    </>
   );
 }
-
-export default Page;
