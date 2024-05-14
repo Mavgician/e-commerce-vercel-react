@@ -95,7 +95,7 @@ export default function Page({ params }) {
     <main className='bg-light text-dark'>
       <Container className='p-5' fluid>
         <Row>
-          <Col xs={2} s={2} md={2} lg={2}>
+          <Col xs={12} s={12} md={2} lg={2}>
             <div className='my-3'>
               <Button active={tab === 0} onClick={e => setTab(0)} className='text-start text-secondary' block color='light'>ACCOUNT</Button>
               <Button active={tab === 1} onClick={e => setTab(1)} className='text-start mt-2 text-secondary' block color='light'>TICKET RESERVATIONS</Button>
@@ -103,7 +103,7 @@ export default function Page({ params }) {
               <Button className='mt-4' block color='primary' onClick={logout}>Logout</Button>
             </div>
           </Col>
-          <Col xs={10} s={10} md={10} lg={10}>
+          <Col xs={12} s={12} md={10} lg={10}>
             <div className={tab === 0 ? '' : 'd-none'}>
               <h4>Account Overview</h4>
               <b>
