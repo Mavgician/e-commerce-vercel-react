@@ -38,6 +38,7 @@ export default function Page() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [termsCond, setTermsCond] = useState(false);
 
   const [errorMsg_p, setErrorMsg_p] = useState('');
   const [errorMsg_e, setErrorMsg_e] = useState('');
@@ -60,7 +61,7 @@ export default function Page() {
     setErrorMsg_e(e_e_message)
     setErrorMsg_p(e_p_message)
 
-    if (e_e_message.length || e_p_message.length) return null
+    if (e_e_message.length || e_p_message.length || !termsCond) return null
     else return await createUserWithEmailAndPassword(email, password)
   }
 
@@ -72,16 +73,17 @@ export default function Page() {
             d_name: user.user.displayName,
             email: user.user.email,
             account_type: 'user',
-            account_image: user.user.photoURL
+            account_image: user.user.photoURL,
+            orders: []
           })
-          router.replace('/account-setup')
+          router.replace(`/account-setup/${user.user.uid}`)
         }
       }
     )()
   }, [loading]);
 
   return (
-    <main className='p-0 position-relative'>
+    <main className='p-0 position-relative bg-light text-dark'>
       <Container className='vh-100 vw-100 d-flex justify-content-center align-items-center'>
         <div>
           <Form onKeyDown={event => { if (event.key === "Enter") submitHandler() }}>
@@ -124,12 +126,12 @@ export default function Page() {
                 Confirm Password
               </Label>
             </FormGroup>
-
             <FormGroup>
               <Label>
                 <Input
                   type='checkbox'
-                  invalid
+                  invalid={!termsCond}
+                  onChange={() => setTermsCond(!termsCond)}
                 />
                 &nbsp;&nbsp;&nbsp;&nbsp;
                 I agree with the terms and conditions

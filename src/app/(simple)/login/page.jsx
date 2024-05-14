@@ -67,11 +67,11 @@ export default function Page() {
   }
 
   return (
-    <main className='p-0 position-relative'>
+    <main className='p-0 position-relative bg-white'>
       <Row className='p-0 m-0 vh-100'>
         <Col md={6} sm={12} className='d-flex justify-content-center align-items-center'>
           <div className='w-25'>
-            <center>
+            <center className='text-dark'>
               <h1 className='mb-4'>Sign In</h1>
               <Button className='mx-1' style={social} outline={true} color='primary' onClick={googleLogin}>
                 <FontAwesomeIcon icon={faGoogle} />
