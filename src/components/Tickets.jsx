@@ -3,7 +3,8 @@
 import {
   Row,
   Col,
-  Container
+  Container,
+  Button
 } from 'reactstrap'
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -33,11 +34,11 @@ export function TicketItem({concert_data}) {
   }, [])
 
   return (
-    <Link href={`tickets/${concert_data?.id}`} className="concert text-light" ref={componentroot}>
+    <Link href={`tickets/${concert_data?.id}`} className="concert text-light text-decoration-none" ref={componentroot}>
       <div className="concert-poster">
         <Image src={concert_data?.poster_image_url} width={componentDim.width} height={componentDim.height} style={{ height: 'auto', width: '100%' }} alt={''} />
       </div>
-      <Container>
+      <Container className='px-4'>
         <div className="concert-title text-light">
           <b>{concert_data?.title}</b>
         </div>
@@ -62,10 +63,10 @@ export function TicketItem({concert_data}) {
             </Col>
             <Col md={10} s={10} xs={10}>
               <div>
-                {date.toLocaleDateString()}
+                {date.toLocaleDateString('ko-KR')}
               </div>
               <div>
-                {`${date.getHours()}:${date.getMinutes()}`}
+                {`${date.toLocaleTimeString('en-us', { hour: "2-digit", minute: "2-digit", timeZoneName: 'short' })}`}
               </div>
               <div>
                 {concert_data?.details?.location}
@@ -97,4 +98,58 @@ export function TicketLayout({children, className={}, sectionKey}) {
     }
   }
   
+}
+
+export function intToLetter(index) {
+  let letter = '';
+  let repeat = Math.floor(Math.log(index) / Math.log(26));
+
+  if (repeat > 1) {
+    letter += intToLetter(index / 26);
+  }
+
+  letter += String.fromCharCode((index % 26) + 'A'.charCodeAt(0));
+
+  return letter;
+};
+
+export function SeatRenderer({ table, onClick = (index) => {}, callBack = (dim) => {}, disabled = true, className='pb-5', height=120 }) {
+  let final_table = [];
+
+  callBack(table)
+
+  for (let i = 0; i < table.column; i++) {
+    let column = [];
+    for (let x = 0; x < table.row; x++) {
+      const seat_index = `${intToLetter(i)}${x + 1}`
+      column.push(
+        <Button
+          className='m-1 border d-flex align-items-center justify-content-center'
+          style={{ height: 40, width: 40, flexShrink: 0 }}
+          key={seat_index}
+          onClick={(e) => {onClick(seat_index )}}
+          disabled={disabled}
+          outline
+        >
+          {seat_index}
+        </Button>
+      );
+    }
+
+    final_table.push(
+      <div className='d-flex' key={`column-${intToLetter(i)}`}>
+        {column}
+        {height === 120 && <div
+          className='m-1'
+          style={{ height: 40, width: 45, flexShrink: 0 }}
+        ></div>}
+      </div>
+    );
+  }
+
+  return (
+    <div className={`${className}`} style={{ height: height, overflow: 'auto' }}>
+      {final_table}
+    </div>
+  );
 }
