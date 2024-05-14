@@ -18,7 +18,7 @@ import Link from 'next/link';
 
 export function Footer() {
   return (
-    <footer className="text-center text-lg-start text-muted bg-dark">
+    <footer className="text-center text-lg-start text-muted bg-dark position-relative">
       <section>
         <Container className="text-center text-md-start py-5 text-white">
           <Row className="mt-3">

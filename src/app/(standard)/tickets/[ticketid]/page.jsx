@@ -115,8 +115,9 @@ export default function Page({ params }) {
   if (loading || auth.loading) return <div></div>
 
   return (
-    <main className="py-5">
-      <Container>
+    <main className="py-5 position-relative">
+      <div className="position-absolute w-100 h-100 top-0 start-0" style={{background: `url('${values?.poster_image_url}')`, backgroundSize: 'cover', filter: 'brightness(0.3) blur(10px)', transform: 'scale(1.03)'}}></div>
+      <Container className="position-relative">
         <SectionHeader>
           Tickets
         </SectionHeader>

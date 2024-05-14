@@ -38,19 +38,19 @@ export function TicketItem({concert_data}) {
       <div className="concert-poster">
         <Image src={concert_data?.poster_image_url} width={componentDim.width} height={componentDim.height} style={{ height: 'auto', width: '100%' }} alt={''} />
       </div>
-      <Container className='px-4'>
+      <Container fluid>
         <div className="concert-title text-light">
           <b>{concert_data?.title}</b>
         </div>
         <div>
           <Row>
             <Col md={2} s={2} xs={2}>
-              <div>
+              <div className='mb-2'>
                 <FontAwesomeIcon
                   icon={faCalendar}
                 />
               </div>
-              <div>
+              <div className='mb-2'>
                 <FontAwesomeIcon
                   icon={faClock}
                 />
@@ -62,10 +62,10 @@ export function TicketItem({concert_data}) {
               </div>
             </Col>
             <Col md={10} s={10} xs={10}>
-              <div>
+              <div className='mb-2'>
                 {date.toLocaleDateString('ko-KR')}
               </div>
-              <div>
+              <div className='mb-2'>
                 {`${date.toLocaleTimeString('en-us', { hour: "2-digit", minute: "2-digit", timeZoneName: 'short' })}`}
               </div>
               <div>

@@ -49,34 +49,11 @@ main {
 .concert {
     width: 100%;
     display: inline-block;
-    background: grey;
     padding-bottom: 20px;
     margin-bottom: 40px;
     border-radius: 2%;
     transition: 0.05s;
-}
-
-.concert:hover {
-    filter: brightness(0.25);
-    transition: 0.05s;
-}
-
-.concert-title {
-    margin: 10px 0
-}
-
-.concert-poster>img {
-    border-radius: 2%;
-}
-
-.concert {
-    width: 100%;
-    display: inline-block;
-    background: grey;
-    padding-bottom: 20px;
-    margin-bottom: 40px;
-    border-radius: 2%;
-    transition: 0.05s;
+    background-color: black;
 }
 
 .concert:hover {
