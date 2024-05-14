@@ -6,7 +6,7 @@ import {
 
 function Page() {
   return (
-    <main className='d-flex justify-content-center align-itis-center'>
+    <main className='d-flex justify-content-center align-items-center'>
       <Container>
         <div>
           <h3>ABOUT US</h3>
