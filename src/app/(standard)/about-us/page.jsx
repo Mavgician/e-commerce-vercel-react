@@ -20,11 +20,11 @@ function Page() {
             Our team of knowledgeable and experienced professionals upholds the highest standards of service at ConFlix. We take immense pride in our meticulous processes, fostering trust and satisfaction in a secure and efficient environment.
           </p>
           <p>
-            In addition to our commitment to excellence in ticket selling, we value community engagient and regularly participate in events aimed at promoting music and entertainment. We believe in contributing to the cultural vibrancy of our community and supporting initiatives that enhance the overall experience of concert-goers. ConFlix is not just a ticket selling platform; it's a part of the rich history of music and entertainment.
+            In addition to our commitment to excellence in ticket selling, we value community engagient and regularly participate in events aimed at promoting music and entertainment. We believe in contributing to the cultural vibrancy of our community and supporting initiatives that enhance the overall experience of concert-goers. ConFlix is not just a ticket selling platform; it&apos;s a part of the rich history of music and entertainment.
           </p>
           <h3>OUR MISSION</h3>
           <p>
-            "<i>At <b>ConFlix</b>,</i> our mission is to <b>enhance the event experience and overall enjoyment</b>
+            &quot;<i>At <b>ConFlix</b>,</i> our mission is to <b>enhance the event experience and overall enjoyment</b>
             of our community by providing <i>exceptional ticketing services</i> in a user-friendly and customer-focused
             environment. We are dedicated to offering a wide range of event tickets for various interests and
             preferences, ensuring that everyone can find the perfect experience.
@@ -39,7 +39,7 @@ function Page() {
             Our commitment extends beyond ticket sales; we aim to <b>engage with our customers</b> and
             <b>enhance their overall event experience</b> through personalized recommendations, event
             guides, and customer support. By combining technology with ipathy, we strive to create miorable
-            experiences and foster a sense of community among event-goers."
+            experiences and foster a sense of community among event-goers.&quot;
           </p>
         </div>
       </Container>
