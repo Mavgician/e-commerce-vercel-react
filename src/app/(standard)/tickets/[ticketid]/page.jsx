@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation"
 import { ModalFrame } from "@/components/SimpleModal"
 
 import { SeatRenderer } from "@/components/Tickets"
+import { UserAuth } from "@/scripts/AuthContextProvider"
 
 function BuyModal({ isOpen, toggle, seats, id, name, image }) {
   const [type, setType] = useState(0);
@@ -101,11 +102,17 @@ export default function Page({ params }) {
   const [values, loading, error, snapshot] = useDocumentDataOnce(doc(db, 'tickets', params.ticketid));
   const [buyModal, setBuyModal] = useState(false);
 
+  const auth = UserAuth()
+  const router = useRouter()
+
   const date = values?.details?.date.toDate()
 
   function buyHandler() {
+    if (!auth.user) return router.push('/login')
     setBuyModal(true)
   }
+
+  if (loading || auth.loading) return <div></div>
 
   return (
     <main className="py-5">

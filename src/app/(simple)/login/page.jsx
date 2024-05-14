@@ -53,10 +53,11 @@ export default function Page() {
       d_name: user.user.displayName,
       email: user.user.email,
       account_type: 'user',
-      account_image: user.user.photoURL
+      account_image: user.user.photoURL,
+      orders: []
     })
 
-    return router.back()
+    return router.push(`/account-setup/${user.user.uid}`)
   }
 
   async function normalSignIn() {
