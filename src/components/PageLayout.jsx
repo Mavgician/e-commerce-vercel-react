@@ -1,6 +1,4 @@
 import {
-  Row,
-  Col,
   Container
 } from 'reactstrap'
 

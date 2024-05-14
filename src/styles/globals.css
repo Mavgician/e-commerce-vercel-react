@@ -10,13 +10,9 @@
     color: inherit;
 }
 
-html,
-body {
-    background-color: rgb(255, 255, 255);
-    min-height: 100vh;
-}
-
 main {
+    background-color: black;
+    color: white;
     min-height: 100vh;
 }
 
