@@ -573,13 +573,13 @@ export function TicketAdmin() {
               type='select'
               onChange={(e) => { sortbyHandler(e.target.value) }}
             >
-              <option value={0}>title</option>
-              <option value={1}>id</option>
-              <option value={2}>date</option>
+              <option value={0}>Title</option>
+              <option value={1}>ID</option>
+              <option value={2}>Date</option>
             </Input>
           </div>
           <small className='text-muted me-1 ms-3'>
-            Showing {ticketCount} of {doc_limit}
+            Showing {ticketCount} of {ticketCount < doc_limit ? ticketCount : doc_limit}
           </small>
           <Button color='transparent' size='sm' onClick={getPreviousPage}>
             <FontAwesomeIcon icon={faArrowLeft} />

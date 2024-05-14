@@ -56,7 +56,7 @@ const doc_limit = 5;
 
 // Firebase references for fetching
 const collectionRef = collection(db, 'user');
-const queryRef = query(collectionRef, limit(doc_limit));
+const queryRef = query(collectionRef, orderBy('last_name'), limit(doc_limit));
 
 function ConfirmationModal({ submit, isOpen, toggle, children }) {
   return (
@@ -371,13 +371,13 @@ export function UserAdmin() {
               type='select'
               onChange={(e) => { sortbyHandler(e.target.value) }}
             >
-              <option value={0}>title</option>
-              <option value={1}>id</option>
-              <option value={2}>date</option>
+              <option value={0}>Name</option>
+              <option value={1}>ID</option>
+              <option value={2}>Date</option>
             </Input>
           </div>
           <small className='text-muted me-1 ms-3'>
-            Showing {docCount} of {doc_limit}
+            Showing {docCount} of {docCount < doc_limit ? docCount : doc_limit}
           </small>
           <Button color='transparent' size='sm' onClick={getPreviousPage}>
             <FontAwesomeIcon icon={faArrowLeft} />
