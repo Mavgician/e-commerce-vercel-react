@@ -107,6 +107,7 @@ export default function Page({ params }) {
             <div className={tab === 0 ? '' : 'd-none'}>
               <h4>Account Overview</h4>
               <b>
+                <p className='m-0'>Name: {value?.first_name} {value?.last_name}</p>
                 <p className='m-0'>Username: {value?.d_name}</p>
               </b>
               <div className="d-flex align-items-center gap-3">
@@ -129,10 +130,10 @@ export default function Page({ params }) {
                   </div>
                 </div>
                 <div className={`py-4 ${adminTab === 0 ? '' : 'd-none'}`}>
-                  <TicketAdmin/>
+                  <TicketAdmin />
                 </div>
                 <div className={`py-4 ${adminTab === 1 ? '' : 'd-none'}`}>
-                  <UserAdmin/>
+                  <UserAdmin />
                 </div>
               </div>
             }
