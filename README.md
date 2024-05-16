@@ -57,4 +57,6 @@ After adding these lines to the firebase.js file, you are all set.
 
 ## Project Deployment
 
-Once the project has been finished and the bugs have been squashed. The team will deploy the project on Vercel. A web hosting service tailor made for the needs of Next.js.
+Project demo [Link](https://conflix.vercel.app)
+
+Experimental demos will have unique links per branch. [See experimental branch](https://github.com/Mavgician/conflix/tree/Experimental) deployments.
