@@ -76,7 +76,7 @@ function Order({ orderReference }) {
 }
 
 export default function Page({ params }) {
-  const [value, d_loading, d_error, snapshot, reload] = useDocumentDataOnce(doc(db, 'user', params.userID))
+  const [value, d_loading, d_error, snapshot, reload] = useDocumentDataOnce(doc(db, 'user', params.userid))
   const [signOut, loading, error] = useSignOut(auth);
 
   const [tab, setTab] = useState(0);
