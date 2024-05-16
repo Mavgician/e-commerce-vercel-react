@@ -2,7 +2,7 @@
 
 This branch is a "To be maintained" version of the original ConFlix project where new features and revamps will be developed after the final project has been submitted, recorded, and graded.
 
-# This will be treated as a practice repository for the developer.
+### This will be treated as a practice repository by the developer.
 
 ## Requirements
 
