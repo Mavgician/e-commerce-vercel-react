@@ -28,34 +28,44 @@ export function Navigationbar({ transparent = false, isFixed = true }) {
     <>
       <Navbar
         expand='md'
-        color={transparent ? 'transparent' : 'dark'}
-        dark={transparent ? false : true}
+        color={transparent ? 'transparent' : 'light'}
         fixed={isFixed ? 'top' : undefined}
         style={transparent ? { boxShadow: 'none' } : null}
       >
         <NavbarBrand href='/' className='d-flex align-items-center'>
           {/* <img src={logo.src} width='40' height='40' /> */}
           <small className='mx-2'>
-            <b>ConFlix</b>
+            <b>DNB</b>
           </small>
         </NavbarBrand>
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>
-          <Nav className='text-uppercase fw-bold' navbar>
+          <Nav className='ms-auto fw-bold' navbar>            
             <NavItem>
               <NavLink href='/'>Home</NavLink>
             </NavItem>
             <NavItem>
-              <NavLink href='/tickets'>Tickets</NavLink>
+              <NavLink href='/boys'>Boys</NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink href='/girls'>Girls</NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink href='/cart'>Cart</NavLink>
             </NavItem>
             <NavItem>
               <NavLink href='/about-us'>About Us</NavLink>
             </NavItem>
-          </Nav>
-          <Nav className='ms-auto' navbar>
-            <NavItem>
-              <NavLink href={auth.user ? `/user/${auth.user?.uid}` : '/login'} style={auth.loading ? {pointerEvents: 'none'} : null}>
-                {auth.user ? <FontAwesomeIcon icon={faUser}/> : 'Login' }
+            <NavItem style={{ padding: '0px 30px' }}>         
+              <NavLink href={auth.user ? `/user/${auth.user?.uid}` : '/login'} 
+                style={{
+                  color: 'white',
+                  backgroundColor: 'rgb(23, 32, 42)',
+                  borderRadius: '4px',
+                  padding: '6px 30px',
+                  pointerEvents: auth.loading ? 'none' : 'auto',
+                }}>
+                {auth.user ? <FontAwesomeIcon icon={faUser}/> : 'Sign Up' }
               </NavLink>
             </NavItem>
           </Nav>
